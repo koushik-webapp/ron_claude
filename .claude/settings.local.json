@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(taskkill /PID 28532 /F)",
+      "Bash(npm run:*)",
+      "Bash(cmd /c \"netstat -ano | findstr :3000\")",
+      "Bash(cmd /c \"powershell -Command \"\"Test-NetConnection -ComputerName localhost -Port 3000\"\"\")",
+      "Bash(cmd /c \"powershell -Command \"\"$r = Test-NetConnection localhost -Port 3000 -WarningAction SilentlyContinue; $r.TcpTestSucceeded\"\" 2>&1\")",
+      "Bash(cmd /c \"netstat -ano 2>&1\")",
+      "Bash(powershell -Command \"Stop-Process -Id 28532 -Force -ErrorAction SilentlyContinue; Stop-Process -Id 28412 -Force -ErrorAction SilentlyContinue; Write-Host ''done''\")",
+      "Bash(netstat -ano)",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -State Listen -ErrorAction SilentlyContinue | Select-Object -First 1\")",
+      "Bash(npx tsc:*)",
+      "Bash(ffprobe -v quiet -print_format json -show_streams \"C:/Users/sonuk/Downloads/kling_20260318_作品__114_0.mp4\")",
+      "Bash(ffmpeg -i \"e:/ron_claude/public/hero-van.mp4\" -c:v libx264 -preset slow -crf 22 -g 1 -keyint_min 1 -pix_fmt yuv420p -an -movflags +faststart \"e:/ron_claude/public/hero-van-scrub.mp4\" -y)",
+      "Bash(npm install:*)",
+      "Bash(ls e:/ron_claude/public/hero-van*.png)",
+      "Bash(ls -t C:/Users/sonuk/Downloads/*.png)",
+      "Bash(find /e/ron_claude -type f -name *hero* -o -name *Hero*)",
+      "Bash(node -e \":*)"
+    ]
+  }
+}
