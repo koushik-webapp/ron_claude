@@ -99,7 +99,7 @@ export default function WhyChooseUsSection() {
             </p>
             <a
               href="#"
-              className="inline-block px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-500 transition-colors"
+              className="qf-trigger inline-block px-6 py-3 bg-green-600 text-white font-bold rounded-xl hover:bg-green-500 transition-colors"
             >
               Get a Free Quote
             </a>

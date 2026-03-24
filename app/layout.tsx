@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FloatingNav from "@/components/ui/floating-nav";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,6 +31,10 @@ export default function RootLayout({
       >
         <FloatingNav />
         {children}
+        {/* Premium vanilla JS chatbot — edit at /public/chatbot.js */}
+        <Script src="/chatbot.js" strategy="afterInteractive" />
+        {/* Premium multi-step quote form — edit at /public/quote-form.js */}
+        <Script src="/quote-form.js" strategy="afterInteractive" />
       </body>
     </html>
   );

@@ -5,6 +5,16 @@
   --foreground: #ffffff;
 }
 
+/* ── Chatbot animations ─────────────────────────────────────────────────── */
+@keyframes chatbotFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+.chatbot-fadein {
+  animation: chatbotFadeIn 0.22s ease forwards;
+}
+
 * {
   box-sizing: border-box;
 }
