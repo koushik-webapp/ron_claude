@@ -11,6 +11,7 @@ const CARDS = [
     title: 'Garbage Removal',
     desc: 'Furniture, electronics, appliances, junk — we haul it all away, responsibly and same day.',
     videoSrc: '/videos/garbage-removal.mp4',
+    gifSrc: '',
     accent: '#f59e0b',       // amber
     accentRgb: '245,158,11',
     baseGrad: 'linear-gradient(145deg, #1c1407 0%, #120e04 60%, #1a1206 100%)',
@@ -36,7 +37,8 @@ const CARDS = [
     num: '02',
     title: 'Moving (USA)',
     desc: 'Local and out-of-state moves handled with care and efficiency — anywhere in the country.',
-    videoSrc: '/videos/moving.mp4',
+    videoSrc: '',
+    gifSrc: '/moving.gif',
     accent: '#60a5fa',       // blue
     accentRgb: '96,165,250',
     baseGrad: 'linear-gradient(145deg, #060d1c 0%, #080f1f 60%, #04091a 100%)',
@@ -63,7 +65,8 @@ const CARDS = [
     num: '03',
     title: 'Armed Security',
     desc: 'Licensed armed security personnel for residential, commercial, and event protection.',
-    videoSrc: '',
+    videoSrc: '/security.mp4',
+    gifSrc: '',
     accent: '#4ade80',       // green
     accentRgb: '74,222,128',
     baseGrad: 'linear-gradient(145deg, #071208 0%, #050e06 60%, #061009 100%)',
@@ -171,9 +174,20 @@ function ServiceCard({ card, index }: { card: typeof CARDS[0]; index: number }) 
           loop
           playsInline
           className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-          animate={{ opacity: hovered ? 0.55 : 0.22 }}
+          animate={{ opacity: hovered ? 0.95 : 0.75 }}
           transition={{ duration: 0.7, ease: 'easeInOut' }}
           onError={(e) => { (e.target as HTMLVideoElement).style.display = 'none' }}
+        />
+      )}
+
+      {/* ── GIF background ────────────────────────────────────────────────── */}
+      {card.gifSrc && (
+        <motion.img
+          src={card.gifSrc}
+          alt={card.title}
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+          animate={{ opacity: hovered ? 0.95 : 0.75 }}
+          transition={{ duration: 0.7, ease: 'easeInOut' }}
         />
       )}
 

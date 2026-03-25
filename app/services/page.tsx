@@ -14,6 +14,7 @@ const SERVICES = [
     title: 'Garbage Removal',
     tagline: 'Same-day. No questions asked.',
     videoSrc: '/videos/garbage-removal.mp4',
+    gifSrc: '',
     accent: '#f59e0b',
     accentRgb: '245,158,11',
     baseGrad: 'linear-gradient(145deg, #2a1e0e 0%, #1a1408 60%, #241a0e 100%)',
@@ -41,7 +42,8 @@ const SERVICES = [
     label: 'Relocation',
     title: 'Moving (USA)',
     tagline: 'Local moves. Long-distance too.',
-    videoSrc: '/videos/moving.mp4',
+    videoSrc: '',
+    gifSrc: '/moving.gif',
     accent: '#60a5fa',
     accentRgb: '96,165,250',
     baseGrad: 'linear-gradient(145deg, #0d1628 0%, #101828 60%, #08101e 100%)',
@@ -70,7 +72,8 @@ const SERVICES = [
     label: 'Protection',
     title: 'Armed Security',
     tagline: 'Licensed. Professional. Discreet.',
-    videoSrc: '',
+    videoSrc: '/security.mp4',
+    gifSrc: '',
     accent: '#4ade80',
     accentRgb: '74,222,128',
     baseGrad: 'linear-gradient(145deg, #071208 0%, #050e06 60%, #061009 100%)',
@@ -249,50 +252,6 @@ function GarbageRemovalDetails() {
           </div>
         </motion.div>
 
-        {/* CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="rounded-3xl overflow-hidden relative"
-          style={{ background: 'linear-gradient(135deg, #052e16 0%, #14532d 50%, #166534 100%)' }}
-        >
-          {/* Background pattern */}
-          <div className="absolute inset-0 opacity-10" style={{
-            backgroundImage: 'radial-gradient(circle at 20% 50%, #4ade80 0%, transparent 50%), radial-gradient(circle at 80% 20%, #86efac 0%, transparent 40%)'
-          }} />
-          <div className="relative px-8 md:px-16 py-16 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div>
-              <p className="text-[10px] font-bold tracking-[0.28em] uppercase text-green-400 mb-3">Ready to start?</p>
-              <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-[1.1] mb-3">
-                Ready to Clear Your Space?
-              </h3>
-              <p className="text-[15px] text-green-100/70 leading-relaxed max-w-[380px]">
-                Book your junk removal in minutes. We handle the heavy lifting — you just point and we haul.
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-              <motion.a
-                href="#quote"
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white text-slate-900 text-[13px] font-bold tracking-wide shadow-lg hover:bg-green-50 transition-colors duration-200"
-              >
-                Get Free Quote
-              </motion.a>
-              <motion.a
-                href="tel:2010502253"
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-green-500/40 text-white text-[13px] font-bold tracking-wide hover:border-green-400 hover:bg-white/5 transition-all duration-200"
-              >
-                Book Now →
-              </motion.a>
-            </div>
-          </div>
-        </motion.div>
-
       </div>
     </section>
   )
@@ -304,129 +263,42 @@ const MOVING_SERVICES = [
   {
     title: 'Local Moving',
     desc: "Fast, careful moves within the city — every belonging treated like it's our own.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M3 12h18M3 12l4-4m-4 4l4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx="17" cy="12" r="3" stroke="currentColor" strokeWidth="1.6"/>
-      </svg>
-    ),
+    img: '/local_moving.jpg',
   },
   {
     title: 'Long Distance Moving',
     desc: 'State-to-state relocation with real-time coordination and secure, on-time delivery.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M2 13h14l-3-6H5L2 13z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
-        <path d="M16 13h4l2 4H16v-4z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
-        <circle cx="6" cy="17" r="2" stroke="currentColor" strokeWidth="1.6"/>
-        <circle cx="18" cy="17" r="2" stroke="currentColor" strokeWidth="1.6"/>
-      </svg>
-    ),
+    img: '/long_distance_moving.jpg',
   },
   {
     title: 'Residential Moving',
     desc: 'Stress-free home moves from studios to large houses — fully managed, start to finish.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
-        <path d="M9 21V12h6v9" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
-      </svg>
-    ),
+    img: '/residental_moving.jpg',
   },
   {
     title: 'Commercial Moving',
     desc: 'Office and business relocations executed with precision to keep your downtime near zero.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <rect x="2" y="7" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="1.6"/>
-        <path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.6"/>
-        <path d="M12 12v4M10 14h4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-      </svg>
-    ),
+    img: '/commercial_moving.jpg',
   },
   {
     title: 'Packing Services',
     desc: 'Professional packing with premium materials so nothing shifts, scratches, or breaks.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
-        <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-      </svg>
-    ),
+    img: '/packing_services.jpg',
   },
   {
     title: 'Unpacking Services',
     desc: 'We settle you in faster — unboxing, organizing, and placing items exactly where you want.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M5 8h14l-1.5 9a2 2 0 01-2 1.5H8.5a2 2 0 01-2-1.5L5 8z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
-        <path d="M9 8V6a3 3 0 016 0v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-        <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    ),
+    img: '/unpacking_service.jpg',
   },
   {
     title: 'Furniture Assembly',
     desc: 'Careful disassembly at pickup, full reassembly at delivery — no missing bolts, no guesswork.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <rect x="2" y="8" width="20" height="10" rx="2" stroke="currentColor" strokeWidth="1.6"/>
-        <path d="M6 8V6a2 2 0 012-2h8a2 2 0 012 2v2" stroke="currentColor" strokeWidth="1.6"/>
-        <path d="M6 18v2M18 18v2M12 13v2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-      </svg>
-    ),
+    img: '/furniture_assembly.jpg',
   },
   {
     title: 'Heavy Item Moving',
     desc: 'Pianos, safes, gym equipment — we have the crew and equipment to move it safely.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M12 3v4M8 5l2.5 2.5M16 5l-2.5 2.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-        <rect x="3" y="11" width="18" height="8" rx="2" stroke="currentColor" strokeWidth="1.6"/>
-        <path d="M7 11V9a2 2 0 014 0v2M13 11V9a2 2 0 014 0v2" stroke="currentColor" strokeWidth="1.6"/>
-      </svg>
-    ),
-  },
-  {
-    title: 'Same-Day Moving',
-    desc: "Last-minute move? We mobilize fast so you're not stuck waiting when time is short.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6"/>
-        <path d="M12 7v5l3 3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    ),
-  },
-  {
-    title: 'Storage Solutions',
-    desc: "Flexible short and long-term storage so your timeline stays yours — not the move's.",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <rect x="2" y="5" width="20" height="4" rx="1" stroke="currentColor" strokeWidth="1.6"/>
-        <rect x="2" y="13" width="20" height="4" rx="1" stroke="currentColor" strokeWidth="1.6"/>
-        <path d="M6 9v4M18 9v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
-        <circle cx="12" cy="7" r="1" fill="currentColor"/>
-        <circle cx="12" cy="15" r="1" fill="currentColor"/>
-      </svg>
-    ),
-  },
-  {
-    title: 'Loading & Unloading',
-    desc: 'Labor-only help for trucks, pods, or storage units — we bring the muscle, you bring the plan.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
-    ),
-  },
-  {
-    title: 'Specialty Item Handling',
-    desc: 'Artwork, electronics, antiques, and high-value items packed and moved with white-glove care.',
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-        <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round"/>
-      </svg>
-    ),
+    img: '/heavy_item_moving.jpg',
   },
 ]
 
@@ -447,19 +319,26 @@ function MovingServiceCard({ item, index }: { item: typeof MOVING_SERVICES[0]; i
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: (index % 4) * 0.07 }}
       whileHover={{ y: -4 }}
-      className="group relative bg-white rounded-2xl p-6 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-blue-100/60 transition-all duration-300 cursor-default"
+      className="group relative overflow-hidden rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-blue-100/50 transition-all duration-300 cursor-default bg-white"
     >
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-        style={{ boxShadow: 'inset 0 0 0 1.5px rgba(96,165,250,0.25)' }} />
-
-      <div className="w-11 h-11 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors duration-200">
-        {item.icon}
+      {/* Photo */}
+      <div className="relative h-44 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={item.img}
+          alt={item.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
       </div>
 
-      <h3 className="text-[15px] font-bold text-slate-900 mb-1.5">{item.title}</h3>
-      <p className="text-[13px] text-slate-500 leading-relaxed">{item.desc}</p>
+      {/* Text */}
+      <div className="p-5">
+        <h3 className="text-[15px] font-bold text-slate-900 mb-1.5">{item.title}</h3>
+        <p className="text-[13px] text-slate-500 leading-relaxed">{item.desc}</p>
+      </div>
 
-      <div className="absolute bottom-0 left-6 right-6 h-[2px] rounded-full bg-blue-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+      <div className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-blue-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
     </motion.div>
   )
 }
@@ -495,7 +374,7 @@ function MovingDetails() {
         </motion.div>
 
         {/* Cards grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
           {MOVING_SERVICES.map((item, i) => (
             <MovingServiceCard key={item.title} item={item} index={i} />
           ))}
@@ -582,6 +461,204 @@ function MovingDetails() {
   )
 }
 
+// ─── Elite Secure Services Section ───────────────────────────────────────────
+
+const SECURE_SERVICES = [
+  {
+    title: 'Secure High-Value Transport',
+    desc: 'Safe transport for valuables, sensitive equipment, and protected assets.',
+    img: '/secure_moving.jpg',
+  },
+  {
+    title: 'Executive & Confidential Relocation',
+    desc: 'Discreet moving solutions for private clients, executives, and high-profile relocations.',
+    img: '/confidential.jpg',
+  },
+  {
+    title: 'Protected Business Asset Moves',
+    desc: 'Secure relocation of office equipment, documents, and critical business property.',
+    img: '/asset_protection.jpg',
+  },
+  {
+    title: 'Safe & Vault Handling',
+    desc: 'Specialized moving for safes, vaults, and heavy secure storage units.',
+    img: '/vault.jpg',
+  },
+  {
+    title: 'Guarded Storage Solutions',
+    desc: 'Monitored storage options for high-value or sensitive belongings.',
+    img: '/guarded_secure.jpg',
+  },
+  {
+    title: 'Emergency Response Moving',
+    desc: 'Fast, dependable relocation support when urgent action is needed.',
+    img: '/emergency_services.jpg',
+  },
+  {
+    title: 'Nationwide Secure Logistics',
+    desc: 'Trusted long-distance transport with elevated care and coordination.',
+    img: '/nationwide.jpg',
+  },
+]
+
+function SecureServiceCard({ item, index }: { item: typeof SECURE_SERVICES[0]; index: number }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const inView = useInView(ref, { once: true, margin: '-40px' })
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: (index % 3) * 0.1 }}
+      whileHover={{ y: -5, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } }}
+      className="group relative overflow-hidden rounded-2xl cursor-default"
+      style={{ border: '1px solid rgba(255,255,255,0.07)', boxShadow: '0 4px 24px rgba(0,0,0,0.5)' }}
+    >
+      {/* Photo */}
+      <div className="relative h-48 overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={item.img}
+          alt={item.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 brightness-75 group-hover:brightness-90"
+        />
+        <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(5,10,5,0.85) 0%, rgba(5,10,5,0.3) 60%, transparent 100%)' }} />
+        {/* Green top shimmer */}
+        <div className="absolute top-0 left-0 right-0 h-[1px]"
+          style={{ background: 'linear-gradient(90deg, transparent, rgba(74,222,128,0.35), transparent)' }} />
+      </div>
+
+      {/* Text */}
+      <div className="px-6 py-5" style={{ background: 'linear-gradient(145deg, #0c110d 0%, #090e09 100%)' }}>
+        <h3 className="text-[15px] font-bold text-white mb-2 leading-snug group-hover:text-green-100 transition-colors duration-300">
+          {item.title}
+        </h3>
+        <p className="text-[13px] text-zinc-500 leading-relaxed group-hover:text-zinc-400 transition-colors duration-300">
+          {item.desc}
+        </p>
+      </div>
+
+      {/* Bottom accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-green-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+    </motion.div>
+  )
+}
+
+function EliteSecureServices() {
+  const headerRef = useRef<HTMLDivElement>(null)
+  const headerInView = useInView(headerRef, { once: true, margin: '-60px' })
+
+  return (
+    <section className="relative overflow-hidden border-t border-zinc-900"
+      style={{ background: 'linear-gradient(180deg, #09090c 0%, #0a0a10 50%, #080810 100%)' }}
+    >
+      {/* Ambient background glows */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[400px] rounded-full opacity-[0.04]"
+          style={{ background: 'radial-gradient(circle, #4ade80 0%, transparent 70%)', filter: 'blur(60px)' }} />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[350px] rounded-full opacity-[0.03]"
+          style={{ background: 'radial-gradient(circle, #86efac 0%, transparent 70%)', filter: 'blur(60px)' }} />
+      </div>
+
+      {/* Subtle grid texture */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.018]"
+        style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)',
+          backgroundSize: '60px 60px',
+        }}
+      />
+
+      <div className="relative max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 py-28">
+
+        {/* Header */}
+        <motion.div
+          ref={headerRef}
+          initial={{ opacity: 0, y: 30 }}
+          animate={headerInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="mb-20"
+        >
+          {/* Eyebrow */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-px w-8 bg-green-500/50" />
+            <p className="text-[10px] font-bold tracking-[0.32em] uppercase text-green-500">
+              03 — Protection
+            </p>
+          </div>
+
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+            <div>
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.04] mb-0">
+                Elite Secure<br />
+                <span className="text-green-500">
+                  Services.
+                </span>
+              </h2>
+            </div>
+            <p className="text-[15px] text-zinc-500 leading-relaxed max-w-[380px] lg:text-right lg:pb-2">
+              Discreet, protected, high-trust solutions for valuable moves and sensitive operations.
+            </p>
+          </div>
+
+          {/* Divider */}
+          <div className="mt-10 h-px w-full"
+            style={{ background: 'linear-gradient(90deg, rgba(74,222,128,0.2) 0%, rgba(255,255,255,0.05) 60%, transparent 100%)' }}
+          />
+        </motion.div>
+
+        {/* Cards grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-20">
+          {SECURE_SERVICES.map((item, i) => (
+            <SecureServiceCard key={item.title} item={item} index={i} />
+          ))}
+        </div>
+
+        {/* Bottom CTA strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col sm:flex-row items-center justify-between gap-6 rounded-2xl px-8 py-7"
+          style={{
+            background: 'rgba(255,255,255,0.025)',
+            border: '1px solid rgba(255,255,255,0.06)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.04)',
+          }}
+        >
+          <div>
+            <p className="text-[10px] font-bold tracking-[0.28em] uppercase text-green-500/70 mb-1">Licensed & Insured</p>
+            <p className="text-[15px] font-bold text-white">Need a tailored security solution?</p>
+            <p className="text-[13px] text-zinc-600 mt-0.5">Every operation is different. We'll build the right plan for yours.</p>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <motion.a
+              href="#contact"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[12px] font-bold tracking-wide text-white"
+              style={{
+                background: 'linear-gradient(135deg, #16a34a 0%, #15803d 60%, #166534 100%)',
+                boxShadow: '0 0 0 1px rgba(74,222,128,0.25), 0 8px 24px rgba(22,163,74,0.20)',
+              }}
+            >
+              Book This Service →
+            </motion.a>
+            <a
+              href="tel:2010502253"
+              className="text-[12px] font-semibold text-zinc-600 hover:text-zinc-300 transition-colors whitespace-nowrap"
+            >
+              or call us
+            </a>
+          </div>
+        </motion.div>
+
+      </div>
+    </section>
+  )
+}
+
 // ─── Service Card (full width alternating layout) ─────────────────────────────
 
 function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: number }) {
@@ -633,9 +710,20 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
                   src={service.videoSrc}
                   autoPlay muted loop playsInline
                   className="absolute inset-0 w-full h-full object-cover"
-                  animate={{ opacity: hovered ? 0.6 : 0.28 }}
+                  animate={{ opacity: hovered ? 0.95 : 0.75 }}
                   transition={{ duration: 0.7 }}
                   onError={(e) => { (e.target as HTMLVideoElement).style.display = 'none' }}
+                />
+              )}
+
+              {/* GIF */}
+              {service.gifSrc && (
+                <motion.img
+                  src={service.gifSrc}
+                  alt={service.title}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  animate={{ opacity: hovered ? 0.95 : 0.75 }}
+                  transition={{ duration: 0.7 }}
                 />
               )}
 
@@ -831,6 +919,7 @@ export default function ServicesPage() {
         <div key={service.id}>
           <ServiceBlock service={service} index={i} />
           {service.id === 'moving' && <MovingDetails />}
+          {service.id === 'security' && <EliteSecureServices />}
         </div>
       ))}
 
