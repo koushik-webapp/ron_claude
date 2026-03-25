@@ -5,7 +5,7 @@ import BeforeAfterSection from './components/BeforeAfterSection'
 import TestimonialsSection from './components/TestimonialsSection'
 import FAQSection from './components/FAQSection'
 import CTASection from './components/CTASection'
-import FooterSection from './components/FooterSection'
+import FlickeringFooter from '../components/ui/flickering-footer'
 
 export default function Home() {
   return (
@@ -17,7 +17,7 @@ export default function Home() {
       <TestimonialsSection />
       <FAQSection />
       <CTASection />
-      <FooterSection />
+      <FlickeringFooter />
     </main>
   )
 }
