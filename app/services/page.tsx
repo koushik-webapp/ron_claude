@@ -766,9 +766,10 @@ export default function ServicesPage() {
       <div className="relative w-full" style={{ height: 'calc(100vh - 60px)', marginTop: '60px' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/fleet-hero.png"
+          src="/services-hero.png"
           alt="Rainey Removal LLC fleet — van, box truck, and pickup"
           className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: 'center 85%' }}
         />
 
         {/* Overlays */}
