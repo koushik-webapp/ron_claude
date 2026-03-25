@@ -437,10 +437,10 @@ function MovingDetails() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <motion.a
-                href="#quote"
+                href="#"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white text-slate-900 text-[13px] font-bold tracking-wide shadow-lg hover:bg-blue-50 transition-colors duration-200"
+                className="qf-trigger inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white text-slate-900 text-[13px] font-bold tracking-wide shadow-lg hover:bg-blue-50 transition-colors duration-200"
               >
                 Get Free Quote
               </motion.a>

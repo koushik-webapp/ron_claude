@@ -87,11 +87,11 @@ export default function HowItWorksSection() {
           className="flex justify-center mt-16"
         >
           <motion.a
-            href="#quote"
+            href="#"
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="relative group inline-flex items-center gap-3 px-10 py-4 rounded-full overflow-hidden"
+            className="qf-trigger relative group inline-flex items-center gap-3 px-10 py-4 rounded-full overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, #16a34a 0%, #15803d 60%, #166534 100%)',
               boxShadow: '0 0 0 1px rgba(74,222,128,0.25), 0 8px 32px rgba(22,163,74,0.30)',

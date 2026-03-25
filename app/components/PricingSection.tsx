@@ -106,7 +106,7 @@ export default function PricingSection() {
 
               <a
                 href="#"
-                className={`block text-center px-6 py-3 font-bold rounded-xl transition-colors ${
+                className={`qf-trigger block text-center px-6 py-3 font-bold rounded-xl transition-colors ${
                   featured
                     ? 'bg-green-600 text-white hover:bg-green-500'
                     : 'border border-zinc-700 text-zinc-300 font-semibold hover:border-zinc-500 hover:text-white'
@@ -131,7 +131,7 @@ export default function PricingSection() {
           <div className="mt-8">
             <a
               href="#"
-              className="inline-block px-8 py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-500 transition-colors text-base"
+              className="qf-trigger inline-block px-8 py-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-500 transition-colors text-base"
             >
               Get Your Free Quote
             </a>

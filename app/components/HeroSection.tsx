@@ -70,7 +70,7 @@ export default function HeroSection() {
           className="flex flex-wrap gap-4 mb-14"
         >
           {/* Primary CTA */}
-          <button className="group relative px-8 py-4 bg-blue-600 text-white font-bold text-base md:text-lg rounded-2xl overflow-hidden shadow-lg shadow-blue-950/60 hover:shadow-blue-700/40 hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
+          <button className="qf-trigger group relative px-8 py-4 bg-blue-600 text-white font-bold text-base md:text-lg rounded-2xl overflow-hidden shadow-lg shadow-blue-950/60 hover:shadow-blue-700/40 hover:scale-[1.03] active:scale-[0.97] transition-all duration-200">
             <span className="relative z-10 flex items-center gap-2">
               Get Free Quote
               <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
