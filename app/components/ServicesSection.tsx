@@ -37,8 +37,8 @@ const CARDS = [
     num: '02',
     title: 'Moving (USA)',
     desc: 'Local and out-of-state moves handled with care and efficiency — anywhere in the country.',
-    videoSrc: '',
-    gifSrc: '/moving.gif',
+    videoSrc: '/videos/moving.mp4',
+    gifSrc: '',
     accent: '#60a5fa',       // blue
     accentRgb: '96,165,250',
     baseGrad: 'linear-gradient(145deg, #060d1c 0%, #080f1f 60%, #04091a 100%)',

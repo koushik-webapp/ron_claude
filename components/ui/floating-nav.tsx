@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Instagram, Facebook } from "lucide-react";
 import Image from "next/image";
 
 const NAV_LINKS = [
@@ -12,7 +12,7 @@ const NAV_LINKS = [
     children: ["Garbage Removal", "Moving (USA)", "Armed Security"],
   },
   { label: "How It Works", href: "/#how-it-works" },
-  { label: "Contact",      href: "/#contact" },
+  { label: "Gallery",      href: "/gallery" },
 ];
 
 const FloatingNav = () => {
@@ -118,6 +118,24 @@ const FloatingNav = () => {
               (201) 050-2253
             </a>
             <a
+              href="https://www.instagram.com/ronrainey/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+              aria-label="Instagram"
+            >
+              <Instagram size={16} />
+            </a>
+            <a
+              href="https://www.facebook.com/Rainey.1985"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+              aria-label="Facebook"
+            >
+              <Facebook size={16} />
+            </a>
+            <a
               href="#"
               className="qf-trigger px-5 py-2.5 rounded-full bg-slate-900 text-white text-[11px] font-bold tracking-wide hover:bg-slate-700 transition-colors duration-200 shadow-sm"
             >
@@ -161,6 +179,24 @@ const FloatingNav = () => {
                     className="px-4 py-3 text-[13px] font-semibold text-center text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
                   >
                     (201) 050-2253
+                  </a>
+                  <a
+                    href="https://www.instagram.com/ronrainey/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-3 text-[13px] font-semibold text-center text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Instagram size={15} />
+                    Instagram
+                  </a>
+                  <a
+                    href="https://www.facebook.com/Rainey.1985"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-3 text-[13px] font-semibold text-center text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Facebook size={15} />
+                    Facebook
                   </a>
                   <a
                     href="#"

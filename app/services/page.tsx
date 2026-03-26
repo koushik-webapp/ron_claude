@@ -42,8 +42,8 @@ const SERVICES = [
     label: 'Relocation',
     title: 'Moving (USA)',
     tagline: 'Local moves. Long-distance too.',
-    videoSrc: '',
-    gifSrc: '/moving.gif',
+    videoSrc: '/videos/moving.mp4',
+    gifSrc: '',
     accent: '#60a5fa',
     accentRgb: '96,165,250',
     baseGrad: 'linear-gradient(145deg, #0d1628 0%, #101828 60%, #08101e 100%)',
@@ -856,7 +856,7 @@ export default function ServicesPage() {
         <img
           src="/fleet-hero.png"
           alt="Rainey Removal LLC fleet — van, box truck, and pickup"
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover object-top"
         />
 
         {/* Overlays */}

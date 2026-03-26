@@ -114,23 +114,12 @@ function FacebookIcon() {
   )
 }
 
-function GoogleIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" className="w-[17px] h-[17px]">
-      <path
-        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H8.079V12h2.359V9.742c0-2.325 1.383-3.61 3.503-3.61 1.014 0 2.073.181 2.073.181v2.282h-1.168c-1.15 0-1.508.713-1.508 1.444V12h2.566l-.41 2.891h-2.156v6.987C18.343 21.128 22 16.991 22 12z"
-        fill="currentColor"
-      />
-    </svg>
-  )
-}
 
 /* ─── Data ───────────────────────────────────────────────────────── */
 
 const SOCIALS = [
-  { icon: <InstagramIcon />, label: 'Instagram', href: '#' },
-  { icon: <FacebookIcon />,  label: 'Facebook',  href: '#' },
-  { icon: <GoogleIcon />,    label: 'Google',    href: '#' },
+  { icon: <InstagramIcon />, label: 'Instagram', href: 'https://www.instagram.com/ronrainey/' },
+  { icon: <FacebookIcon />,  label: 'Facebook',  href: 'https://www.facebook.com/Rainey.1985' },
 ]
 
 const NAV_LINKS = [
@@ -179,6 +168,8 @@ export default function FlickeringFooter() {
                   key={label}
                   href={href}
                   aria-label={label}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-8 h-8 rounded-lg border border-zinc-800 flex items-center justify-center text-zinc-500 hover:text-green-400 hover:border-green-400/25 hover:bg-green-400/5 transition-all duration-200"
                 >
                   {icon}

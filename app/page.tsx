@@ -15,7 +15,7 @@ export default function Home() {
       <HowItWorksSection />
       <BeforeAfterSection />
       <TestimonialsSection />
-      <FAQSection />
+<FAQSection />
       <CTASection />
       <FlickeringFooter />
     </main>
