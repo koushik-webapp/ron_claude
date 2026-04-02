@@ -126,6 +126,8 @@ function VideoModal({ src, onClose }: { src: string; onClose: () => void }) {
           src={src}
           controls
           autoPlay
+          playsInline
+          muted
           className="w-full rounded-2xl"
           style={{ maxHeight: '78vh' }}
         />
@@ -174,6 +176,7 @@ function ReviewTile({
       showFirstFrame()
     } else {
       vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
+      vid.load() // iOS Safari won't fire loadedmetadata without explicit load()
     }
   }, [])
 
@@ -271,7 +274,7 @@ function ReviewTile({
       >
         <div
           className="w-11 h-11 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(6px)' }}
+          style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
         >
           <div
             style={{
@@ -314,7 +317,10 @@ function JobCard({
     if (!vid) return
     const showFirstFrame = () => { vid.currentTime = 0.1 }
     if (vid.readyState >= 1) showFirstFrame()
-    else vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
+    else {
+      vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
+      vid.load() // iOS Safari won't fire loadedmetadata without explicit load()
+    }
   }, [])
 
   useEffect(() => {
@@ -392,7 +398,7 @@ function JobCard({
       >
         <div
           className="w-11 h-11 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(6px)' }}
+          style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
         >
           <div
             style={{
@@ -504,14 +510,14 @@ export default function GallerySection() {
                 style={{ height: '175px', background: '#0f0f0f' }}
                 onClick={() => setActiveVideo(review.src)}
               >
-                {review.thumb && (
-                  <img
-                    src={review.thumb}
-                    alt={review.title}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    style={{ opacity: 0.65 }}
-                  />
-                )}
+                <video
+                  src={review.src}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={{ objectPosition: 'top center', opacity: 0.72 }}
+                />
                 <div
                   className="absolute inset-0"
                   style={{
@@ -522,7 +528,7 @@ export default function GallerySection() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div
                     className="w-10 h-10 rounded-full flex items-center justify-center"
-                    style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)' }}
+                    style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
                   >
                     <div
                       style={{
@@ -596,7 +602,7 @@ export default function GallerySection() {
                 />
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(175deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%)' }} />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)' }}>
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}>
                     <div style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '6px 0 6px 12px', borderColor: 'transparent transparent transparent white', marginLeft: '2px' }} />
                   </div>
                 </div>
