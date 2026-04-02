@@ -395,8 +395,8 @@ export default function HeroPremium() {
 
       {/* ── Scroll-scrubbed video ─────────────────────────────────────────── */}
       {/* Mobile: floats just below tagline text; sm+: anchored to bottom    */}
-      <div className="absolute inset-x-0 bottom-0 top-0 flex items-start pt-[27%] sm:items-end sm:pt-0 justify-center z-20"
-           style={{ paddingBottom: '2vh', isolation: 'isolate' }}>
+      <div className="absolute inset-x-0 bottom-0 top-0 flex items-start pt-[40vh] sm:items-end sm:pt-0 justify-center z-20"
+           style={{ paddingBottom: '2vh' }}>
         {/*
           MacBook Safari fix — van video is 16:9 (1.793 ratio).
           At sm:max-h-[84vh] on a 1280×800 MacBook, max-h=672px → width=1205px (94% viewport!).
@@ -416,7 +416,6 @@ export default function HeroPremium() {
         <video
           ref={videoRef}
           src="/hero-van-scrub.mp4"
-          poster="/hero-van-loaded.png"
           muted
           playsInline
           preload="auto"
@@ -450,7 +449,7 @@ export default function HeroPremium() {
         initial={{ opacity: 0, y: 8 }}
         animate={isMobile ? { opacity: 1, y: 0 } : undefined}
         transition={{ delay: 0.2, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[12%] sm:pt-[7%] lg:pt-[9%] pointer-events-none"
+        className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[5%] sm:pt-[7%] lg:pt-[9%] pointer-events-none"
       >
         {/* lg:pt-[9%] — at 1280×800 this = 72px, giving the headline clear air above the van */}
         {/* Safari fix: pt-[7%] is % of section height (set by JS = window.innerHeight).
