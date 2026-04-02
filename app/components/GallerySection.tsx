@@ -167,16 +167,20 @@ function ReviewTile({
   const videoRef = useRef<HTMLVideoElement>(null)
   const [thumbError, setThumbError] = useState(false)
 
-  // Show first frame as thumbnail on mount
+  // Show first frame as thumbnail on mount — play+pause forces the browser to decode and paint the frame
   useEffect(() => {
     const vid = videoRef.current
     if (!vid) return
-    const showFirstFrame = () => { vid.currentTime = 0.1 }
+    const showFirstFrame = () => {
+      vid.currentTime = 0.1
+      vid.muted = true
+      vid.play().then(() => vid.pause()).catch(() => {})
+    }
     if (vid.readyState >= 1) {
       showFirstFrame()
     } else {
       vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
-      vid.load() // iOS Safari won't fire loadedmetadata without explicit load()
+      vid.load()
     }
   }, [])
 
@@ -315,11 +319,16 @@ function JobCard({
   useEffect(() => {
     const vid = videoRef.current
     if (!vid) return
-    const showFirstFrame = () => { vid.currentTime = 0.1 }
-    if (vid.readyState >= 1) showFirstFrame()
-    else {
+    const showFirstFrame = () => {
+      vid.currentTime = 0.1
+      vid.muted = true
+      vid.play().then(() => vid.pause()).catch(() => {})
+    }
+    if (vid.readyState >= 1) {
+      showFirstFrame()
+    } else {
       vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
-      vid.load() // iOS Safari won't fire loadedmetadata without explicit load()
+      vid.load()
     }
   }, [])
 
