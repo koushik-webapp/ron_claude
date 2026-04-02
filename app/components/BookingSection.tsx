@@ -45,7 +45,7 @@ export default function BookingSection() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section id="quote" className="bg-zinc-950 py-28 px-6 md:px-10 lg:px-20">
+    <section id="quote" className="bg-zinc-950 py-28 px-6 md:px-10 lg:px-20" style={{ scrollMarginTop: '60px' }}>
       <div ref={ref} className="max-w-[1200px] mx-auto">
 
         {/* ── Two-column layout ─────────────────────────────────────────────── */}

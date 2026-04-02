@@ -136,7 +136,11 @@ const FloatingNav = () => {
               <Facebook size={16} />
             </a>
             <a
-              href="#"
+              href="/#quote"
+              onClick={(e) => {
+                const el = document.getElementById('quote')
+                if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }) }
+              }}
               className="qf-trigger px-5 py-2.5 rounded-full bg-slate-900 text-white text-[11px] font-bold tracking-wide hover:bg-slate-700 transition-colors duration-200 shadow-sm"
             >
               Get a Quote

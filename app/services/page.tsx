@@ -187,7 +187,7 @@ function GarbageRemovalDetails() {
   const headerInView = useInView(headerRef, { once: true })
 
   return (
-    <section className="bg-slate-50 border-t border-slate-100">
+    <section id="garbage-removal" className="bg-slate-50 border-t border-slate-100" style={{ scrollMarginTop: '60px' }}>
       <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 py-24">
 
         {/* Section header */}
@@ -437,7 +437,7 @@ function MovingDetails() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <motion.a
-                href="#"
+                href="/#quote"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 className="qf-trigger inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white text-slate-900 text-[13px] font-bold tracking-wide shadow-lg hover:bg-blue-50 transition-colors duration-200"
@@ -634,7 +634,7 @@ function EliteSecureServices() {
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <motion.a
-              href="#contact"
+              href="/#quote"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[12px] font-bold tracking-wide text-white"
@@ -668,7 +668,7 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
   const isEven = index % 2 === 0
 
   return (
-    <div ref={ref} id={service.id} className="py-20 border-b border-zinc-900">
+    <div ref={ref} id={service.id} className="py-20 border-b border-zinc-900" style={{ scrollMarginTop: '60px' }}>
       <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
         <div className={`grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center ${!isEven ? 'lg:[direction:rtl]' : ''}`}>
 
@@ -819,7 +819,7 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
             {/* CTA */}
             <div className="flex items-center gap-4 pt-2">
               <motion.a
-                href="#contact"
+                href="/#quote"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[12px] font-bold tracking-wide text-white"
@@ -949,7 +949,7 @@ export default function ServicesPage() {
           </h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <motion.a
-              href="/"
+              href="/#quote"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               className="inline-flex items-center gap-3 px-10 py-4 rounded-full text-[13px] font-bold tracking-wide text-white"

@@ -28,7 +28,11 @@ export default function CTASection() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
             <a
-              href="#"
+              href="#quote"
+              onClick={(e) => {
+                e.preventDefault()
+                document.getElementById('quote')?.scrollIntoView({ behavior: 'smooth' })
+              }}
               className="qf-trigger px-8 py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-500 transition-colors w-full sm:w-auto text-center"
             >
               Get a Free Quote

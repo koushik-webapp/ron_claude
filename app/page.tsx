@@ -4,6 +4,7 @@ import HowItWorksSection from './components/HowItWorksSection'
 import BeforeAfterSection from './components/BeforeAfterSection'
 import TestimonialsSection from './components/TestimonialsSection'
 import FAQSection from './components/FAQSection'
+import BookingSection from './components/BookingSection'
 import CTASection from './components/CTASection'
 import FlickeringFooter from '../components/ui/flickering-footer'
 
@@ -15,7 +16,8 @@ export default function Home() {
       <HowItWorksSection />
       <BeforeAfterSection />
       <TestimonialsSection />
-<FAQSection />
+      <FAQSection />
+      <BookingSection />
       <CTASection />
       <FlickeringFooter />
     </main>

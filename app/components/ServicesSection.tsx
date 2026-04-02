@@ -9,6 +9,7 @@ const CARDS = [
   {
     num: '01',
     title: 'Garbage Removal',
+    href: '/services#garbage-removal',
     desc: 'Furniture, electronics, appliances, junk — we haul it all away, responsibly and same day.',
     videoSrc: '/videos/garbage-removal.mp4',
     gifSrc: '',
@@ -36,6 +37,7 @@ const CARDS = [
   {
     num: '02',
     title: 'Moving (USA)',
+    href: '/services#moving',
     desc: 'Local and out-of-state moves handled with care and efficiency — anywhere in the country.',
     videoSrc: '/videos/moving.mp4',
     gifSrc: '',
@@ -64,6 +66,7 @@ const CARDS = [
   {
     num: '03',
     title: 'Armed Security',
+    href: '/services#security',
     desc: 'Licensed armed security personnel for residential, commercial, and event protection.',
     videoSrc: '/security.mp4',
     gifSrc: '',
@@ -90,7 +93,7 @@ const CARDS = [
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
-function ServiceCard({ card, index }: { card: typeof CARDS[0]; index: number }) {
+function ServiceCard({ card, index }: { card: typeof CARDS[0] & { href: string }; index: number }) {
   const [hovered, setHovered] = useState(false)
 
   return (
@@ -249,12 +252,13 @@ function ServiceCard({ card, index }: { card: typeof CARDS[0]; index: number }) 
             animate={{ x: hovered ? 5 : 0 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
-            <span
-              className="text-[12px] font-semibold tracking-[0.08em]"
+            <a
+              href={card.href}
+              className="text-[12px] font-semibold tracking-[0.08em] pointer-events-auto"
               style={{ color: card.accent }}
             >
               Learn more →
-            </span>
+            </a>
           </motion.div>
         </div>
       </div>
