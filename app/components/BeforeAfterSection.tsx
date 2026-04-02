@@ -8,52 +8,26 @@ const container = {
 }
 const item = {
   hidden: { opacity: 0, y: 32 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
 }
 
 const SCENARIOS = [
-  { label: 'Garage Cleanout' },
-  { label: 'Estate Clearance' },
-  { label: 'Office Removal' },
+  {
+    label: 'Garage Cleanout',
+    before: '/garage-before.jpg',
+    after: '/garage-after.png',
+  },
+  {
+    label: 'Estate Clearance',
+    before: '/estate-before.png',
+    after: '/estate-after.png',
+  },
+  {
+    label: 'Office Removal',
+    before: '/office-before.png',
+    after: '/office-after.png',
+  },
 ]
-
-function ClutterPattern() {
-  const positions = [
-    [8, 8], [28, 6], [50, 10], [70, 8], [18, 28], [42, 24], [62, 30], [82, 26],
-    [10, 48], [36, 46], [58, 50], [78, 44], [22, 66], [46, 64], [68, 68], [88, 62],
-    [14, 82], [40, 80], [60, 84], [80, 78],
-  ]
-  return (
-    <div className="relative w-full h-32 overflow-hidden">
-      {positions.map(([x, y], i) => (
-        <div
-          key={i}
-          className="absolute rounded bg-zinc-700"
-          style={{
-            left: `${x}%`,
-            top: `${y}%`,
-            width: `${10 + (i % 3) * 8}px`,
-            height: `${8 + (i % 4) * 5}px`,
-            opacity: 0.6 + (i % 3) * 0.15,
-            backgroundColor: i % 3 === 0 ? '#3f3f46' : i % 3 === 1 ? '#52525b' : '#27272a',
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-function CleanState() {
-  return (
-    <div className="relative w-full h-32 flex items-center justify-center">
-      <div className="w-12 h-12 rounded-full bg-green-950/40 border border-green-900 flex items-center justify-center">
-        <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6">
-          <path d="M5 12l5 5L19 7" stroke="#4ade80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </div>
-    </div>
-  )
-}
 
 export default function BeforeAfterSection() {
   return (
@@ -83,9 +57,9 @@ export default function BeforeAfterSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-60px' }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
         >
-          {SCENARIOS.map(({ label }) => (
+          {SCENARIOS.map(({ label, before, after }) => (
             <motion.div
               key={label}
               variants={item}
@@ -97,13 +71,16 @@ export default function BeforeAfterSection() {
               </div>
 
               {/* Before */}
-              <div className="mx-6 mb-3 rounded-xl bg-zinc-800 overflow-hidden">
-                <div className="px-4 pt-4">
-                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-600">Before</span>
+              <div className="mx-6 mb-3 rounded-xl overflow-hidden">
+                <div className="px-0 pt-0">
+                  <span className="block px-4 pt-3 pb-2 text-[10px] font-bold tracking-[0.2em] uppercase text-zinc-500 bg-zinc-800">Before</span>
                 </div>
-                <div className="p-4">
-                  <ClutterPattern />
-                </div>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={before}
+                  alt={`${label} before`}
+                  className="w-full h-48 object-cover"
+                />
               </div>
 
               {/* Arrow divider */}
@@ -116,13 +93,14 @@ export default function BeforeAfterSection() {
               </div>
 
               {/* After */}
-              <div className="mx-6 mb-6 rounded-xl bg-green-950/40 border border-green-900 overflow-hidden">
-                <div className="px-4 pt-4">
-                  <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-green-400">After</span>
-                </div>
-                <div className="p-4">
-                  <CleanState />
-                </div>
+              <div className="mx-6 mb-6 rounded-xl overflow-hidden border border-green-900">
+                <span className="block px-4 pt-3 pb-2 text-[10px] font-bold tracking-[0.2em] uppercase text-green-400 bg-green-950/40">After</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={after}
+                  alt={`${label} after`}
+                  className="w-full h-48 object-cover"
+                />
               </div>
             </motion.div>
           ))}

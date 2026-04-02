@@ -8,7 +8,7 @@ const container = {
 }
 const item = {
   hidden: { opacity: 0, y: 32 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
 }
 
 const TIERS = [
@@ -60,7 +60,7 @@ export default function PricingSection() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-60px' }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch"
+          className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch"
         >
           {TIERS.map(({ name, volume, price, items, featured }) => (
             <motion.div

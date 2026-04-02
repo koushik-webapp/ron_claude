@@ -9,7 +9,7 @@ const container = {
 }
 const item = {
   hidden: { opacity: 0, y: 32 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
 }
 
 const STEPS = [
@@ -59,7 +59,7 @@ export default function HowItWorksSection() {
         >
           {STEPS.map(({ number, title, desc }, idx) => (
             <React.Fragment key={title}>
-              <motion.div variants={item} className="p-8">
+              <motion.div variants={item} className="p-5 md:p-8">
                 <span className="text-7xl font-black text-green-900/60 leading-none select-none block -ml-1 mb-1">
                   {number}
                 </span>

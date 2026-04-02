@@ -312,8 +312,8 @@ export default function HeroPremium() {
       <LeftPanel mouseY={panelY} />
 
       {/* ── Scroll-scrubbed video ─────────────────────────────────────────── */}
-      {/* Bottom-anchored so the van sits on the "floor" of the viewport     */}
-      <div className="absolute inset-x-0 bottom-0 top-0 flex items-end justify-center z-20"
+      {/* Mobile: floats just below tagline text; sm+: anchored to bottom    */}
+      <div className="absolute inset-x-0 bottom-0 top-0 flex items-start pt-[40vh] sm:items-end sm:pt-0 justify-center z-20"
            style={{ paddingBottom: '2vh' }}>
         <video
           ref={videoRef}
@@ -321,9 +321,8 @@ export default function HeroPremium() {
           muted
           playsInline
           preload="auto"
-          className="w-auto h-auto max-w-[96vw] select-none"
+          className="w-auto h-auto max-w-[96vw] max-h-[68vh] sm:max-h-[84vh] select-none"
           style={{
-            maxHeight: '84vh',
             mixBlendMode: 'multiply',
             /* Clip only the watermark strip — minimal, not the wheels */
             clipPath: 'inset(0 0 4% 0)',
@@ -349,9 +348,9 @@ export default function HeroPremium() {
       {/* ── Tagline ───────────────────────────────────────────────────────── */}
       <motion.div
         style={{ opacity: tagOp, y: tagY }}
-        className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[7vh] pointer-events-none"
+        className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[12vh] sm:pt-[7vh] pointer-events-none"
       >
-        <p className="text-5xl sm:text-6xl md:text-7xl font-black tracking-tight text-center leading-[1.2] inline-flex items-center">
+        <p className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-center leading-[1.2] flex flex-wrap items-center justify-center gap-y-1">
           <span className="bg-white text-slate-900 px-3 py-1">We Move</span>
           <span className="bg-slate-900 text-white px-3 py-1">Anything</span>
           <span className="bg-slate-900 text-green-400 px-3 py-1">Anywhere</span>
@@ -383,7 +382,7 @@ export default function HeroPremium() {
               key={svc}
               variants={{
                 hidden:  { opacity: 0, y: 9 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
               }}
               className="text-[12px] font-semibold tracking-[0.18em] uppercase text-slate-700 leading-none"
             >
@@ -405,7 +404,7 @@ export default function HeroPremium() {
               key={s.label}
               variants={{
                 hidden:  { opacity: 0, y: 7 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] } },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
               }}
               className="flex items-center gap-2.5"
             >
@@ -425,30 +424,16 @@ export default function HeroPremium() {
       {/* ── Sub caption ───────────────────────────────────────────────────── */}
       <motion.div
         style={{ opacity: tagOp }}
-        className="absolute bottom-16 left-0 right-0 z-40 flex items-center justify-center px-10 pointer-events-none"
+        className="absolute bottom-[14vh] sm:bottom-16 left-0 right-0 z-40 flex items-center justify-center px-10 pointer-events-none"
       >
-        <p className="flex-1 text-center text-base font-semibold tracking-[0.18em] uppercase text-green-500">
+        <p className="flex-1 text-center text-[10px] sm:text-base font-semibold tracking-[0.18em] uppercase text-green-500">
           Garbage Removal&nbsp;&nbsp;·&nbsp;&nbsp;Moving&nbsp;&nbsp;·&nbsp;&nbsp;Local &amp; Out of State
         </p>
-        <p className="absolute right-10 text-[11px] font-semibold tracking-[0.16em] uppercase text-slate-400 text-right">
+        <p className="hidden sm:block absolute right-10 text-[11px] font-semibold tracking-[0.16em] uppercase text-slate-400 text-right">
           Est.&nbsp;<span className="text-slate-600">East Orange, New Jersey</span>
         </p>
       </motion.div>
 
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.8, duration: 0.8 }}
-        className="absolute bottom-7 left-1/2 -translate-x-1/2 z-40 pointer-events-none flex flex-col items-center gap-2"
-      >
-        <p className="text-[9px] font-bold tracking-[0.28em] uppercase text-slate-400">Scroll</p>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-px h-6 bg-slate-300"
-        />
-      </motion.div>
 
     </section>
   )
