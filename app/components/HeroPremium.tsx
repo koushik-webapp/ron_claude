@@ -210,7 +210,25 @@ export default function HeroPremium() {
 
   // ── Scrub timeline ────────────────────────────────────────────────────────
   useEffect(() => {
-    const { TOTAL, VIDEO_DURATION } = CFG
+    const { VIDEO_DURATION } = CFG
+
+    // ── Mobile vs desktop config ───────────────────────────────────────────
+    // On touch devices the desktop values feel heavy:
+    //   TOTAL 500 + LERP 0.26 → animation takes ~200 ms to settle after each
+    //   touch event, and needs a 250 px swipe (67 % of a phone screen) to
+    //   complete — both create the "dragging mud" feeling.
+    //
+    // Mobile targets:
+    //   TOTAL 200  → completes in ~90 px swipe (one natural thumb gesture)
+    //   LERP  0.45 → settles in ~5 frames / 83 ms — feels direct under finger
+    //   DELTA_MAX 60   → allows bigger per-frame jumps for snappy completion
+    //   MOMENTUM_DAMP 0.06 → aggressively kills iOS post-lift inertia bleed
+    const isMob         = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    const TOTAL         = isMob ? 200  : CFG.TOTAL
+    const LERP          = isMob ? 0.45 : CFG.LERP
+    const DELTA_MAX     = isMob ? 60   : CFG.DELTA_MAX
+    const MOMENTUM_DAMP = isMob ? 0.06 : CFG.MOMENTUM_DAMP
+
     let target       = 0
     let display      = 0
     let rafId        = 0
@@ -221,12 +239,21 @@ export default function HeroPremium() {
     const releasePage = () => { document.body.style.overflow = ''       }
     lockPage()
 
+    // Mobile safety net: auto-release scroll lock after 5 s so users
+    // can never get permanently stuck if they don't swipe.
+    let safetyTimer: ReturnType<typeof setTimeout> | undefined
+    if (isMob) {
+      safetyTimer = setTimeout(() => {
+        if (!pageReleased) { releasePage(); pageReleased = true }
+      }, 5000)
+    }
+
     const tick = () => {
       const diff = target - display
       if (Math.abs(diff) <= CFG.SNAP) {
         display = target
       } else {
-        display += diff * CFG.LERP
+        display += diff * LERP
       }
       const p = display / TOTAL
       const v = videoRef.current
@@ -242,9 +269,9 @@ export default function HeroPremium() {
       const isMouse = Number.isInteger(rawDelta) && abs >= 100
       let delta = isMouse ? rawDelta * CFG.MOUSE_SCALE : rawDelta
       const isMomentum = !isMouse && prevAbsDelta > 8 && abs < prevAbsDelta * CFG.MOMENTUM_THRESHOLD
-      if (isMomentum) delta *= CFG.MOMENTUM_DAMP
+      if (isMomentum) delta *= MOMENTUM_DAMP
       prevAbsDelta = abs
-      return Math.sign(delta) * Math.min(Math.abs(delta), CFG.DELTA_MAX)
+      return Math.sign(delta) * Math.min(Math.abs(delta), DELTA_MAX)
     }
 
     const onWheel = (e: WheelEvent) => {
@@ -282,9 +309,11 @@ export default function HeroPremium() {
     let touchY = 0
     const onTouchStart = (e: TouchEvent) => { touchY = e.touches[0].clientY }
     const onTouchMove  = (e: TouchEvent) => {
-      const dy    = touchY - e.touches[0].clientY
-      touchY      = e.touches[0].clientY
-      const delta = dy * 2
+      const dy = touchY - e.touches[0].clientY
+      touchY   = e.touches[0].clientY
+      // Mobile multiplier 2.2 (vs desktop 2): with TOTAL=200, a 91 px swipe
+      // completes the animation — a short, decisive thumb gesture.
+      const delta = dy * (isMob ? 2.2 : 2)
       if (target >= TOTAL && delta > 0) {
         if (!pageReleased) { releasePage(); pageReleased = true; setTimeout(() => window.scrollBy({ top: 60, behavior: 'smooth' }), 16) }
         return
@@ -302,6 +331,7 @@ export default function HeroPremium() {
 
     return () => {
       cancelAnimationFrame(rafId)
+      if (safetyTimer !== undefined) clearTimeout(safetyTimer)
       releasePage()
       window.removeEventListener('wheel',      onWheel)
       window.removeEventListener('scroll',     onScroll)
