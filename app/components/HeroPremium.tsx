@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { motion, useMotionValue, useTransform, useSpring, type MotionValue } from 'framer-motion'
 
@@ -69,20 +69,22 @@ function LeftPanel({ mouseY }: { mouseY: MotionValue<number> }) {
               'radial-gradient(ellipse 90% 70% at 50% 75%, rgba(248,250,252,0.95) 0%, transparent 72%)',
           }}
         />
-        <Image
-          src="/hero-man-v3.png"
-          alt="Rainey Removal — crew member"
-          fill
-          priority
-          className="object-contain select-none"
-          style={{
-            objectPosition: 'center bottom',
-            mixBlendMode: 'multiply',
-            filter:
-              'contrast(1.04) brightness(1.01) drop-shadow(0px 6px 20px rgba(0,0,0,0.13))',
-          }}
-          sizes="21vw"
-        />
+        {/* Wrapper applies the filter; Image applies the blend mode separately — Safari can't composite both on one element */}
+        <div className="absolute inset-0" style={{ filter: 'contrast(1.04) brightness(1.01) drop-shadow(0px 6px 20px rgba(0,0,0,0.13))' }}>
+          <Image
+            src="/hero-man-v3.png"
+            alt="Rainey Removal — crew member"
+            fill
+            priority
+            className="object-contain select-none"
+            style={{
+              objectPosition: 'center bottom',
+              mixBlendMode: 'multiply',
+              WebkitMixBlendMode: 'multiply' as React.CSSProperties['mixBlendMode'],
+            }}
+            sizes="21vw"
+          />
+        </div>
         {/* Ground shadow under feet */}
         <div
           className="absolute bottom-0 left-1/2 -translate-x-1/2"
@@ -176,6 +178,10 @@ export default function HeroPremium() {
     const prime = () => { v.play().then(() => { v.pause() }).catch(() => {}) }
     if (v.readyState >= 3) prime()
     else v.addEventListener('canplaythrough', prime, { once: true })
+    // iOS Safari won't buffer until a user gesture — unlock on first touch
+    const unlockOnTouch = () => { prime(); document.removeEventListener('touchstart', unlockOnTouch) }
+    document.addEventListener('touchstart', unlockOnTouch, { passive: true })
+    return () => document.removeEventListener('touchstart', unlockOnTouch)
   }, [])
 
   // ── Scrub timeline ────────────────────────────────────────────────────────
@@ -314,7 +320,7 @@ export default function HeroPremium() {
       {/* ── Scroll-scrubbed video ─────────────────────────────────────────── */}
       {/* Mobile: floats just below tagline text; sm+: anchored to bottom    */}
       <div className="absolute inset-x-0 bottom-0 top-0 flex items-start pt-[40vh] sm:items-end sm:pt-0 justify-center z-20"
-           style={{ paddingBottom: '2vh' }}>
+           style={{ paddingBottom: '2vh', isolation: 'isolate' }}>
         <video
           ref={videoRef}
           src="/hero-van-scrub.mp4"
@@ -324,6 +330,7 @@ export default function HeroPremium() {
           className="w-auto h-auto max-w-[96vw] max-h-[68vh] sm:max-h-[84vh] select-none"
           style={{
             mixBlendMode: 'multiply',
+            WebkitMixBlendMode: 'multiply' as React.CSSProperties['mixBlendMode'],
             /* Clip only the watermark strip — minimal, not the wheels */
             clipPath: 'inset(0 0 4% 0)',
           }}
