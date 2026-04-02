@@ -70,23 +70,23 @@ export default function FooterSection() {
 
             <div className="space-y-2 mb-6">
               <a
-                href="tel:+12010502253"
+                href="tel:+12018502253"
                 className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
               >
                 <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 shrink-0">
                   <path d="M2 3a1 1 0 011-1h2.5l1 3-1.5 1.5a10.7 10.7 0 004.5 4.5L11 9.5l3 1v2.5a1 1 0 01-1 1C6.418 14.5 2 10.082 2 5.5V3z" stroke="#71717a" strokeWidth="1.2" strokeLinejoin="round" />
                 </svg>
-                (201) 050-2253
+                (201) 850-2253
               </a>
               <a
-                href="mailto:info@raineyremoval.com"
+                href="mailto:Ofc.QuranRainey@gmail.com"
                 className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
               >
                 <svg viewBox="0 0 16 16" fill="none" className="w-4 h-4 shrink-0">
                   <rect x="1" y="3" width="14" height="10" rx="2" stroke="#71717a" strokeWidth="1.2" />
                   <path d="M1 5l7 5 7-5" stroke="#71717a" strokeWidth="1.2" strokeLinecap="round" />
                 </svg>
-                info@raineyremoval.com
+                Ofc.QuranRainey@gmail.com
               </a>
             </div>
 

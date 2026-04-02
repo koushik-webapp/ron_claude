@@ -77,7 +77,7 @@ export default function FAQSection() {
   return (
     <section className="bg-zinc-900 py-28 px-6 md:px-10 lg:px-20">
       <div className="max-w-[1100px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           {/* Left */}
           <motion.div
             initial={{ opacity: 0, y: 32 }}
@@ -97,10 +97,10 @@ export default function FAQSection() {
               Still have questions? Give us a call — we&apos;re happy to walk you through anything.
             </p>
             <a
-              href="tel:+12010502253"
+              href="tel:+12018502253"
               className="inline-block px-6 py-3 border border-zinc-700 text-zinc-300 font-semibold rounded-xl hover:border-zinc-500 hover:text-white transition-colors"
             >
-              Call (201) 050-2253
+              Call (201) 850-2253
             </a>
           </motion.div>
 

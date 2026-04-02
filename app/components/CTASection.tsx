@@ -34,10 +34,10 @@ export default function CTASection() {
               Get a Free Quote
             </a>
             <a
-              href="tel:+12010502253"
+              href="tel:+12018502253"
               className="px-8 py-3.5 border border-zinc-600 text-zinc-300 font-semibold rounded-xl hover:border-zinc-400 hover:text-white transition-colors w-full sm:w-auto text-center"
             >
-              Call (201) 050-2253
+              Call (201) 850-2253
             </a>
           </div>
 

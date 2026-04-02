@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, Instagram, Facebook } from "lucide-react";
+import { Menu, ChevronDown, Instagram, Facebook } from "lucide-react";
 import Image from "next/image";
+import { MobileNavOverlay } from "@/components/ui/text-roll-navigation";
 
 const NAV_LINKS = [
   {
@@ -11,7 +12,6 @@ const NAV_LINKS = [
     href: "/services",
     children: ["Garbage Removal", "Moving (USA)", "Armed Security"],
   },
-  { label: "How It Works", href: "/#how-it-works" },
   { label: "Gallery",      href: "/gallery" },
 ];
 
@@ -112,10 +112,10 @@ const FloatingNav = () => {
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
             <a
-              href="tel:2010502253"
+              href="tel:2018502253"
               className="text-[13px] font-semibold text-slate-500 hover:text-slate-900 tracking-wide transition-colors"
             >
-              (201) 050-2253
+              (201) 850-2253
             </a>
             <a
               href="https://www.instagram.com/ronrainey/"
@@ -148,68 +148,17 @@ const FloatingNav = () => {
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
           >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            <Menu size={20} />
           </button>
         </div>
-
-        {/* Mobile menu */}
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.2 }}
-              className="md:hidden overflow-hidden border-t border-slate-100 bg-white"
-            >
-              <div className="px-6 py-4 flex flex-col gap-1">
-                {NAV_LINKS.map((link) => (
-                  <a
-                    key={link.label}
-                    href={link.href}
-                    className="px-4 py-3 text-[13px] font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {link.label}
-                  </a>
-                ))}
-                <div className="pt-3 mt-1 border-t border-slate-100 flex flex-col gap-2">
-                  <a
-                    href="tel:2010502253"
-                    className="px-4 py-3 text-[13px] font-semibold text-center text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
-                  >
-                    (201) 050-2253
-                  </a>
-                  <a
-                    href="https://www.instagram.com/ronrainey/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-3 text-[13px] font-semibold text-center text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Instagram size={15} />
-                    Instagram
-                  </a>
-                  <a
-                    href="https://www.facebook.com/Rainey.1985"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-3 text-[13px] font-semibold text-center text-slate-600 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Facebook size={15} />
-                    Facebook
-                  </a>
-                  <a
-                    href="#"
-                    className="qf-trigger px-4 py-3 text-[11px] font-bold text-center text-white bg-slate-900 hover:bg-slate-700 rounded-full transition-colors tracking-wide"
-                  >
-                    Get a Quote
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </nav>
+
+      {/* Mobile full-screen overlay */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <MobileNavOverlay onClose={() => setMobileOpen(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 };

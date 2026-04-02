@@ -24,8 +24,8 @@
      CONFIG  ← edit phone and name here
   ───────────────────────────────────────────────────────── */
   var QF = {
-    phone:      '(201) 050-2253',
-    phoneHref:  'tel:2010502253',
+    phone:      '(201) 850-2253',
+    phoneHref:  'tel:2018502253',
     name:       'Rainey Removal LLC',
     totalSteps: 4,
   };
@@ -183,6 +183,7 @@
       border:1px solid rgba(255,255,255,0.08);
       box-shadow:var(--qf-shadow);
       overflow:hidden;
+      display:flex;flex-direction:column;max-height:90vh;
       transform:scale(0.94) translateY(20px);
       transition:transform 0.32s cubic-bezier(0.32,0.72,0,1)}
     #qf-overlay.is-open #qf-modal{transform:scale(1) translateY(0)}
@@ -324,7 +325,7 @@
       padding:28px 28px 8px;
       background:var(--qf-bg);
       overflow-y:auto;
-      max-height:calc(100vh - 240px);
+      flex:1;
       min-height:280px}
     #qf-body::-webkit-scrollbar{width:0}
 
@@ -633,7 +634,7 @@
       .qf-card-icon{width:44px;height:44px;flex-shrink:0}
       .qf-card-text{display:flex;flex-direction:column;gap:2px}
       .qf-row-2{grid-template-columns:1fr}
-      #qf-body{padding:22px 20px 8px;max-height:calc(100vh - 220px)}
+      #qf-body{padding:22px 20px 8px}
       #qf-header{padding:18px 20px 16px}
       #qf-footer{padding:16px 20px 20px}
       .qf-contact-chips{flex-direction:column}
@@ -1416,7 +1417,46 @@
     collectStepData();
     /* Truck fades out cleanly on submit — drop box stays */
     if (el.truckAnchor) el.truckAnchor.classList.add('qf-truck-done');
-    showSuccess();
+
+    /* Disable button while sending */
+    el.next.disabled = true;
+    el.next.textContent = 'Sending…';
+
+    var d = state.data;
+    var lines = ['Service: ' + (d.serviceName || '')];
+    var def = DETAIL_FIELDS[state.service] || { fields: [] };
+    def.fields.forEach(function (f) {
+      var val = d[f.id];
+      if (!val || (Array.isArray(val) && val.length === 0)) return;
+      lines.push(f.label + ': ' + (Array.isArray(val) ? val.join(', ') : val));
+    });
+
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name:    d.name    || 'Not provided',
+        email:   d.email   || 'Ofc.QuranRainey@gmail.com',
+        phone:   d.phone   || 'Not provided',
+        message: lines.join('\n'),
+        honeypot: '',
+      }),
+    })
+    .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+    .then(function (r) {
+      if (!r.ok) {
+        el.next.disabled = false;
+        el.next.textContent = 'Request My Quote';
+        console.error('[QuoteForm] submit error:', r.data);
+      } else {
+        showSuccess();
+      }
+    })
+    .catch(function (err) {
+      el.next.disabled = false;
+      el.next.textContent = 'Request My Quote';
+      console.error('[QuoteForm] network error:', err);
+    });
   }
 
   function showSuccess() {

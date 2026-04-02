@@ -31,8 +31,8 @@
   ──────────────────────────────────────────────────────────── */
 
   var CONFIG = {
-    phone:         '(201) 050-2253',
-    phoneHref:     'tel:2010502253',
+    phone:         '(201) 850-2253',
+    phoneHref:     'tel:2018502253',
     quoteId:       'quote',
     contactId:     'contact',
     localHeadline: 'We\u2019re local \u2014 all of New Jersey, plus USA-wide.',

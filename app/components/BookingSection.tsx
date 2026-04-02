@@ -2,6 +2,7 @@
 
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
+import QuoteForm from './QuoteForm'
 
 const TRUST_POINTS = [
   {
@@ -102,13 +103,13 @@ export default function BookingSection() {
               className="flex items-center gap-4 pt-2"
             >
               <a
-                href="tel:2010502253"
+                href="tel:2018502253"
                 className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full border border-zinc-700 bg-zinc-900 text-white text-[12px] font-bold tracking-wide hover:border-green-700 hover:bg-zinc-800 transition-all duration-300"
               >
                 <svg viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5 text-green-400">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
-                Call Now — (201) 050-2253
+                Call Now — (201) 850-2253
               </a>
             </motion.div>
           </motion.div>
@@ -152,29 +153,7 @@ export default function BookingSection() {
                 </div>
               </div>
 
-              {/* ── JOTFORM EMBED — drop your script/iframe here ─────────── */}
-              {/* Replace the placeholder below with your Jotform embed code  */}
-              <div className="p-2" style={{ minHeight: '560px' }}>
-
-                {/* ▼▼▼ PASTE YOUR JOTFORM IFRAME OR SCRIPT TAG HERE ▼▼▼ */}
-                <iframe
-                  id="JotFormIFrame"
-                  title="Rainey Removal Booking Form"
-                  // Replace this src with your actual Jotform embed URL:
-                  src="https://form.jotform.com/250000000000000"
-                  allow="geolocation; microphone; camera; fullscreen"
-                  style={{
-                    width: '100%',
-                    minHeight: '540px',
-                    border: 'none',
-                    borderRadius: '12px',
-                    background: 'transparent',
-                  }}
-                  scrolling="yes"
-                />
-                {/* ▲▲▲ END JOTFORM EMBED ▲▲▲ */}
-
-              </div>
+              <QuoteForm />
 
               {/* Card footer */}
               <div className="px-8 py-4 border-t border-zinc-800/60 flex items-center gap-2">

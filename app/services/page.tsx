@@ -445,7 +445,7 @@ function MovingDetails() {
                 Get Free Quote
               </motion.a>
               <motion.a
-                href="tel:2010502253"
+                href="tel:2018502253"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-blue-400/40 text-white text-[13px] font-bold tracking-wide hover:border-blue-300 hover:bg-white/5 transition-all duration-200"
@@ -646,7 +646,7 @@ function EliteSecureServices() {
               Book This Service →
             </motion.a>
             <a
-              href="tel:2010502253"
+              href="tel:2018502253"
               className="text-[12px] font-semibold text-zinc-600 hover:text-zinc-300 transition-colors whitespace-nowrap"
             >
               or call us
@@ -683,7 +683,7 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
           >
             <motion.div
               className="relative overflow-hidden rounded-2xl"
-              style={{ minHeight: '400px', background: service.baseGrad }}
+              style={{ minHeight: 'clamp(240px, 40vw, 400px)', background: service.baseGrad }}
               whileHover={{ scale: 1.01 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             >
@@ -788,7 +788,7 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
               <p className="text-[10px] font-bold tracking-[0.28em] uppercase mb-3" style={{ color: service.accent }}>
                 {service.num} — {service.label}
               </p>
-              <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight leading-[1.05] mb-3">
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.05] mb-3">
                 {service.title}
               </h2>
               <p className="text-[15px] font-medium text-zinc-500 tracking-wide">
@@ -831,7 +831,7 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
                 Book This Service
                 <span>→</span>
               </motion.a>
-              <a href="tel:2010502253" className="text-[12px] font-semibold text-zinc-500 hover:text-zinc-300 transition-colors">
+              <a href="tel:2018502253" className="text-[12px] font-semibold text-zinc-500 hover:text-zinc-300 transition-colors">
                 or call us
               </a>
             </div>
@@ -868,50 +868,60 @@ export default function ServicesPage() {
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute top-10 left-8 md:left-16"
+          className="absolute top-8 left-6 md:left-16"
         >
           <p className="text-[10px] font-bold tracking-[0.28em] uppercase text-green-500">Our Fleet</p>
         </motion.div>
 
         {/* Center / bottom content */}
-        <div className="absolute bottom-0 left-0 right-0 px-8 md:px-16 pb-14">
+        {/* Heading — top of hero */}
+        <div className="absolute top-0 left-0 right-0 px-6 md:px-16 pt-20 md:pt-24">
           <motion.div
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
           >
-            <h1 className="text-5xl sm:text-6xl lg:text-8xl font-black text-white tracking-tight leading-[1.0] mb-4">
+            <h1 className="text-3xl sm:text-5xl lg:text-8xl font-black text-white tracking-tight leading-[1.05]">
               Every job. Every size.<br />
               <span className="text-green-500">We handle it.</span>
             </h1>
-            <p className="text-[15px] text-zinc-400 leading-relaxed max-w-[460px] mb-10">
-              From a single item to a full estate — our fleet is equipped, wrapped, and ready to roll anywhere in the USA.
-            </p>
+          </motion.div>
+        </div>
 
-            {/* Stat bar */}
-            <div className="flex flex-wrap items-center gap-10">
+        {/* Subcaption + stat bar — pinned to bottom */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.25 }}
+          className="absolute bottom-0 left-0 right-0 px-6 md:px-16 pb-5 md:pb-8 flex flex-col gap-2"
+        >
+          <p className="text-[13px] sm:text-[15px] text-white leading-relaxed max-w-[460px]">
+            From a single item to a full estate — our fleet is equipped, wrapped, and ready to roll anywhere in the USA.
+          </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6 md:gap-10">
               {[
                 { num: '3', label: 'Vehicles in fleet' },
                 { num: '24/7', label: 'Available' },
                 { num: 'NJ + USA', label: 'Service area' },
               ].map((stat, i) => (
-                <div key={stat.label} className="flex items-center gap-10">
+                <div key={stat.label} className="flex items-center gap-6 md:gap-10">
                   <div>
-                    <p className="text-3xl font-black text-white leading-none">{stat.num}</p>
-                    <p className="text-[11px] text-zinc-500 font-medium mt-1">{stat.label}</p>
+                    <p className="text-xl md:text-3xl font-black text-white leading-none">{stat.num}</p>
+                    <p className="text-[10px] md:text-[11px] text-zinc-400 font-medium mt-1">{stat.label}</p>
                   </div>
-                  {i < 2 && <div className="w-px h-8 bg-zinc-700" />}
+                  {i < 2 && <div className="w-px h-7 bg-zinc-700" />}
                 </div>
               ))}
-              <a
-                href="tel:2010502253"
-                className="ml-auto inline-flex items-center gap-2 px-6 py-3 rounded-full border border-zinc-600 bg-zinc-900/70 backdrop-blur-sm text-[13px] font-semibold text-white hover:border-green-500 hover:text-green-400 transition-all duration-200"
-              >
-                (201) 050-2253
-              </a>
             </div>
-          </motion.div>
-        </div>
+            <a
+              href="tel:2018502253"
+              className="hidden sm:inline-flex items-center gap-2 px-6 py-3 rounded-full border border-zinc-600 bg-zinc-900/70 backdrop-blur-sm text-[13px] font-semibold text-white hover:border-green-500 hover:text-green-400 transition-all duration-200"
+            >
+              (201) 850-2253
+            </a>
+          </div>
+        </motion.div>
       </div>
 
       {/* Service blocks */}
@@ -951,10 +961,10 @@ export default function ServicesPage() {
               Book Now →
             </motion.a>
             <a
-              href="tel:2010502253"
+              href="tel:2018502253"
               className="inline-flex items-center gap-2 px-7 py-4 rounded-full border border-zinc-700 text-[13px] font-semibold text-zinc-300 hover:border-zinc-500 hover:text-white transition-all duration-200"
             >
-              (201) 050-2253
+              (201) 850-2253
             </a>
           </div>
         </motion.div>
