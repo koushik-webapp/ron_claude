@@ -423,7 +423,7 @@ export default function HeroPremium() {
       {/* ── Services reveal — right side, scroll-end ─────────────────────── */}
       <motion.div
         style={{ opacity: tagOp, width: '220px' }}
-        className="absolute right-4 top-[18%] lg:top-[22%] z-40 pointer-events-none hidden lg:flex flex-col"
+        className="absolute right-4 top-[18%] lg:top-[28%] z-40 pointer-events-none hidden lg:flex flex-col"
       >
         {/* Section label + rule */}
         <div className="flex items-center gap-3 mb-5">
