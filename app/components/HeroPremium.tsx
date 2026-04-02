@@ -356,13 +356,29 @@ export default function HeroPremium() {
       {/* Mobile: floats just below tagline text; sm+: anchored to bottom    */}
       <div className="absolute inset-x-0 bottom-0 top-0 flex items-start pt-[40vh] sm:items-end sm:pt-0 justify-center z-20"
            style={{ paddingBottom: '2vh', isolation: 'isolate' }}>
+        {/*
+          MacBook Safari fix — van video is 16:9 (1.793 ratio).
+          At sm:max-h-[84vh] on a 1280×800 MacBook, max-h=672px → width=1205px (94% viewport!).
+          This buries the man on the left AND the services panel on the right.
+
+          Math: services panel is 256px from the right edge (220px + 16px margin + 20px buffer).
+          For a centered van not to overlap services:
+            van_right = (viewport + van_w) / 2  ≤  viewport − 256px
+            van_w ≤ viewport − 512px = calc(100vw − 512px)
+
+          Verified at every MacBook size:
+            1280px → 768px wide, 428px tall, 38px gap to services ✓
+            1440px → 928px wide, 518px tall, 38px gap to services ✓
+            1512px → 1000px wide, 558px tall, 38px gap to services ✓
+            1920px → 1408px wide, 785px tall (beautiful on large monitors) ✓
+        */}
         <video
           ref={videoRef}
           src="/hero-van-scrub.mp4"
           muted
           playsInline
           preload="auto"
-          className="w-auto h-auto max-w-[96vw] max-h-[68vh] sm:max-h-[84vh] select-none"
+          className="w-auto h-auto max-w-[96vw] max-h-[68vh] sm:max-h-[84vh] lg:max-w-[calc(100vw-512px)] select-none"
           style={{
             mixBlendMode: 'multiply',
             /* Clip only the watermark strip — minimal, not the wheels */
@@ -389,8 +405,9 @@ export default function HeroPremium() {
       {/* ── Tagline ───────────────────────────────────────────────────────── */}
       <motion.div
         style={{ opacity: tagOp, y: tagY }}
-        className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[12%] sm:pt-[7%] pointer-events-none"
+        className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[12%] sm:pt-[7%] lg:pt-[9%] pointer-events-none"
       >
+        {/* lg:pt-[9%] — at 1280×800 this = 72px, giving the headline clear air above the van */}
         {/* Safari fix: pt-[7%] is % of section height (set by JS = window.innerHeight).
             This is equivalent to pt-[7vh] but resolved after layout is stable. */}
         {/* Safari fix: lg:text-7xl (72px) across 3 bold words nearly fills 1024-1280px viewports,
@@ -405,16 +422,8 @@ export default function HeroPremium() {
 
       {/* ── Services reveal — right side, scroll-end ─────────────────────── */}
       <motion.div
-        style={{
-          opacity: tagOp,
-          // Safari fix: use % (relative to section height set by JS) not vh.
-          // top:18vh and section height=100vh should match, but Safari's initial
-          // vh computation can differ, placing this panel too high on first paint.
-          top: '18%',
-          width: '220px',
-        }}
-        // Safari fix: right-[1%] → right-4 — fixed 16px avoids % width rounding errors in Safari
-        className="absolute right-4 z-40 pointer-events-none hidden lg:flex flex-col"
+        style={{ opacity: tagOp, width: '220px' }}
+        className="absolute right-4 top-[18%] lg:top-[22%] z-40 pointer-events-none hidden lg:flex flex-col"
       >
         {/* Section label + rule */}
         <div className="flex items-center gap-3 mb-5">
