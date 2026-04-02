@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Resend is instantiated per-request so the env var is read at runtime, not build time
 
 // ── Simple in-memory rate limiter (5 req / IP / 60s) ─────────────────────────
 const rateMap = new Map<string, { count: number; reset: number }>()
@@ -87,6 +87,7 @@ export async function POST(req: NextRequest) {
     const safePhone   = esc(phone.trim())
     const safeMessage = esc(message.trim()).replace(/\n/g, '<br/>')
 
+    const resend = new Resend(process.env.RESEND_API_KEY)
     await resend.emails.send({
       // TEST SETUP: uses Resend's shared domain — no custom domain needed yet
       from: 'Rainey Removal <onboarding@resend.dev>',
