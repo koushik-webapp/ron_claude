@@ -80,7 +80,6 @@ function LeftPanel({ mouseY }: { mouseY: MotionValue<number> }) {
             style={{
               objectPosition: 'center bottom',
               mixBlendMode: 'multiply',
-              WebkitMixBlendMode: 'multiply' as React.CSSProperties['mixBlendMode'],
             }}
             sizes="21vw"
           />
@@ -330,7 +329,6 @@ export default function HeroPremium() {
           className="w-auto h-auto max-w-[96vw] max-h-[68vh] sm:max-h-[84vh] select-none"
           style={{
             mixBlendMode: 'multiply',
-            WebkitMixBlendMode: 'multiply' as React.CSSProperties['mixBlendMode'],
             /* Clip only the watermark strip — minimal, not the wheels */
             clipPath: 'inset(0 0 4% 0)',
           }}
