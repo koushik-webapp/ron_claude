@@ -395,7 +395,7 @@ export default function HeroPremium() {
 
       {/* ── Scroll-scrubbed video ─────────────────────────────────────────── */}
       {/* Mobile: floats just below tagline text; sm+: anchored to bottom    */}
-      <div className="absolute inset-x-0 bottom-0 top-0 flex items-start pt-[40vh] sm:items-end sm:pt-0 justify-center z-20"
+      <div className="absolute inset-x-0 bottom-0 top-0 flex items-start pt-[27%] sm:items-end sm:pt-0 justify-center z-20"
            style={{ paddingBottom: '2vh', isolation: 'isolate' }}>
         {/*
           MacBook Safari fix — van video is 16:9 (1.793 ratio).
@@ -416,6 +416,7 @@ export default function HeroPremium() {
         <video
           ref={videoRef}
           src="/hero-van-scrub.mp4"
+          poster="/hero-van-loaded.png"
           muted
           playsInline
           preload="auto"
