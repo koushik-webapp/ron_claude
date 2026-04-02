@@ -389,10 +389,10 @@ export default function HeroPremium() {
       {/* ── Tagline ───────────────────────────────────────────────────────── */}
       <motion.div
         style={{ opacity: tagOp, y: tagY }}
-        {/* Safari fix: pt-[7%] is % of section height (set by JS = window.innerHeight).
-            This is equivalent to pt-[7vh] but resolved after layout is stable. */}
         className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[12%] sm:pt-[7%] pointer-events-none"
       >
+        {/* Safari fix: pt-[7%] is % of section height (set by JS = window.innerHeight).
+            This is equivalent to pt-[7vh] but resolved after layout is stable. */}
         {/* Safari fix: lg:text-7xl (72px) across 3 bold words nearly fills 1024-1280px viewports,
             causing flex-wrap to break the last word onto a second line which overlaps the van.
             Cap at text-6xl for lg (1024-1279px) and only go text-7xl at xl (1280px+). */}
@@ -476,9 +476,9 @@ export default function HeroPremium() {
       </motion.div>
 
       {/* ── Sub caption ───────────────────────────────────────────────────── */}
+      {/* Safari fix: bottom-[14%] is % of section height — same as 14vh once section height is fixed */}
       <motion.div
         style={{ opacity: tagOp }}
-        {/* Safari fix: bottom-[14%] is % of section height — same as 14vh once section height is fixed */}
         className="absolute bottom-[14%] sm:bottom-16 left-0 right-0 z-40 flex items-center justify-center px-10 pointer-events-none"
       >
         <p className="flex-1 text-center text-[10px] sm:text-base font-semibold tracking-[0.18em] uppercase text-green-500">
