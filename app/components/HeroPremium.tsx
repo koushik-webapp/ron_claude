@@ -161,6 +161,17 @@ export default function HeroPremium() {
   const videoRef   = useRef<HTMLVideoElement>(null)
   const progress   = useMotionValue(0)
 
+  // ── Mobile blank-screen fix ───────────────────────────────────────────────
+  // On mobile, tagOp starts at 0 (progress=0 < tagStart=0.82) and stays at 0
+  // until the user scrolls. Combined with the iOS video autoplay block, this
+  // makes the entire hero invisible — blank white screen — until first touch.
+  // Fix: detect touch device on mount, then drive tagline/caption visibility
+  // via a simple mount animation instead of the scroll-gated MotionValue.
+  const [isMobile, setIsMobile] = useState(false)
+  useEffect(() => {
+    setIsMobile('ontouchstart' in window || navigator.maxTouchPoints > 0)
+  }, [])
+
   // ── Safari: 100vh ≠ window.innerHeight on first paint ────────────────────
   // Forces the section to occupy exactly the visible viewport height,
   // preventing vh-based children from over/under-shooting their positions.
@@ -434,7 +445,10 @@ export default function HeroPremium() {
 
       {/* ── Tagline ───────────────────────────────────────────────────────── */}
       <motion.div
-        style={{ opacity: tagOp, y: tagY }}
+        style={isMobile ? {} : { opacity: tagOp, y: tagY }}
+        initial={{ opacity: 0, y: 8 }}
+        animate={isMobile ? { opacity: 1, y: 0 } : undefined}
+        transition={{ delay: 0.2, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
         className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[12%] sm:pt-[7%] lg:pt-[9%] pointer-events-none"
       >
         {/* lg:pt-[9%] — at 1280×800 this = 72px, giving the headline clear air above the van */}
@@ -517,7 +531,10 @@ export default function HeroPremium() {
       {/* ── Sub caption ───────────────────────────────────────────────────── */}
       {/* Safari fix: bottom-[14%] is % of section height — same as 14vh once section height is fixed */}
       <motion.div
-        style={{ opacity: tagOp }}
+        style={isMobile ? {} : { opacity: tagOp }}
+        initial={{ opacity: 0 }}
+        animate={isMobile ? { opacity: 1 } : undefined}
+        transition={{ delay: 0.4, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
         className="absolute bottom-[14%] sm:bottom-16 left-0 right-0 z-40 flex items-center justify-center px-10 pointer-events-none"
       >
         <p className="flex-1 text-center text-[10px] sm:text-base font-semibold tracking-[0.18em] uppercase text-green-500">
