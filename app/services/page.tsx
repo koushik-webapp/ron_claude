@@ -3,7 +3,6 @@
 import { useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import FloatingNav from '@/components/ui/floating-nav'
-import BookingSection from '../components/BookingSection'
 
 const scrollToQuote = () =>
   document.getElementById('quote')?.scrollIntoView({ behavior: 'smooth' })
@@ -941,9 +940,6 @@ export default function ServicesPage() {
           {service.id === 'security' && <EliteSecureServices />}
         </div>
       ))}
-
-      {/* Quote form — same destination for all booking CTAs on this page */}
-      <BookingSection />
 
       {/* Bottom CTA */}
       <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 py-24 text-center">
