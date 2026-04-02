@@ -59,7 +59,16 @@ function LeftPanel({ mouseY }: { mouseY: MotionValue<number> }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.55, duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
         className="hidden lg:block absolute z-10 pointer-events-none"
-        style={{ width: '28%', height: '68vh', bottom: '13%', left: '-8.5%', y: mouseY }}
+        style={{
+          width: '28%',
+          // Safari fix: % height is relative to the section (whose height JS sets to
+          // window.innerHeight). Using vh here could differ from the section height
+          // on Safari's first layout pass, causing the man to be taller than expected.
+          height: '70%',
+          bottom: '8%',
+          left: '-8.5%',
+          y: mouseY,
+        }}
       >
         {/* Soft ambient light behind him — eliminates the "pasted" look */}
         <div
@@ -106,7 +115,8 @@ function LeftPanel({ mouseY }: { mouseY: MotionValue<number> }) {
         <div className="flex-1" />
 
         {/* Words — below the man, near the bottom */}
-        <div className="flex flex-col gap-2.5 pb-[8vh]">
+        {/* Safari fix: pb-[8%] is relative to section height (set by JS) — more stable than 8vh */}
+        <div className="flex flex-col gap-2.5 pb-[8%]">
           {WORDS.map((word, i) => (
             <motion.span
               key={word}
@@ -147,8 +157,23 @@ const CFG = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function HeroPremium() {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const progress = useMotionValue(0)
+  const sectionRef = useRef<HTMLElement>(null)
+  const videoRef   = useRef<HTMLVideoElement>(null)
+  const progress   = useMotionValue(0)
+
+  // ── Safari: 100vh ≠ window.innerHeight on first paint ────────────────────
+  // Forces the section to occupy exactly the visible viewport height,
+  // preventing vh-based children from over/under-shooting their positions.
+  useEffect(() => {
+    const applyVh = () => {
+      if (sectionRef.current) {
+        sectionRef.current.style.height = `${window.innerHeight}px`
+      }
+    }
+    applyVh()
+    window.addEventListener('resize', applyVh, { passive: true })
+    return () => window.removeEventListener('resize', applyVh)
+  }, [])
 
   // ── Mouse parallax for left panel ────────────────────────────────────────
   const rawMouseY  = useMotionValue(0)
@@ -291,9 +316,20 @@ export default function HeroPremium() {
 
   return (
     <section
-      className="relative h-screen overflow-hidden"
+      ref={sectionRef}
+      className="relative overflow-hidden"
       style={{
+        // Safari fix 1: JS sets this to window.innerHeight so vh-children are always accurate.
+        // Fallback covers SSR / first paint before the effect fires.
+        height: '100vh',
         background: 'linear-gradient(to bottom, #ffffff 0%, #ffffff 45%, #f0f1f3 100%)',
+        // Safari fix 2: force the section onto its own GPU compositing layer.
+        // This makes overflow:hidden actually clip child GPU layers (will-change:transform
+        // elements from Framer Motion) — without this Safari lets them escape.
+        transform: 'translateZ(0)',
+        WebkitTransform: 'translateZ(0)',
+        // Safari fix 3: contain mix-blend-mode from leaking to elements outside this section.
+        isolation: 'isolate',
       }}
     >
 
@@ -353,9 +389,14 @@ export default function HeroPremium() {
       {/* ── Tagline ───────────────────────────────────────────────────────── */}
       <motion.div
         style={{ opacity: tagOp, y: tagY }}
-        className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[12vh] sm:pt-[7vh] pointer-events-none"
+        {/* Safari fix: pt-[7%] is % of section height (set by JS = window.innerHeight).
+            This is equivalent to pt-[7vh] but resolved after layout is stable. */}
+        className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[12%] sm:pt-[7%] pointer-events-none"
       >
-        <p className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-center leading-[1.2] flex flex-wrap items-center justify-center gap-y-1">
+        {/* Safari fix: lg:text-7xl (72px) across 3 bold words nearly fills 1024-1280px viewports,
+            causing flex-wrap to break the last word onto a second line which overlaps the van.
+            Cap at text-6xl for lg (1024-1279px) and only go text-7xl at xl (1280px+). */}
+        <p className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black tracking-tight text-center leading-[1.2] flex flex-wrap items-center justify-center gap-y-1">
           <span className="bg-white text-slate-900 px-3 py-1">We Move</span>
           <span className="bg-slate-900 text-white px-3 py-1">Anything</span>
           <span className="bg-slate-900 text-green-400 px-3 py-1">Anywhere</span>
@@ -364,8 +405,16 @@ export default function HeroPremium() {
 
       {/* ── Services reveal — right side, scroll-end ─────────────────────── */}
       <motion.div
-        style={{ opacity: tagOp, top: '18vh', width: '220px' }}
-        className="absolute right-[1%] z-40 pointer-events-none hidden lg:flex flex-col"
+        style={{
+          opacity: tagOp,
+          // Safari fix: use % (relative to section height set by JS) not vh.
+          // top:18vh and section height=100vh should match, but Safari's initial
+          // vh computation can differ, placing this panel too high on first paint.
+          top: '18%',
+          width: '220px',
+        }}
+        // Safari fix: right-[1%] → right-4 — fixed 16px avoids % width rounding errors in Safari
+        className="absolute right-4 z-40 pointer-events-none hidden lg:flex flex-col"
       >
         {/* Section label + rule */}
         <div className="flex items-center gap-3 mb-5">
@@ -429,7 +478,8 @@ export default function HeroPremium() {
       {/* ── Sub caption ───────────────────────────────────────────────────── */}
       <motion.div
         style={{ opacity: tagOp }}
-        className="absolute bottom-[14vh] sm:bottom-16 left-0 right-0 z-40 flex items-center justify-center px-10 pointer-events-none"
+        {/* Safari fix: bottom-[14%] is % of section height — same as 14vh once section height is fixed */}
+        className="absolute bottom-[14%] sm:bottom-16 left-0 right-0 z-40 flex items-center justify-center px-10 pointer-events-none"
       >
         <p className="flex-1 text-center text-[10px] sm:text-base font-semibold tracking-[0.18em] uppercase text-green-500">
           Garbage Removal&nbsp;&nbsp;·&nbsp;&nbsp;Moving&nbsp;&nbsp;·&nbsp;&nbsp;Local &amp; Out of State
