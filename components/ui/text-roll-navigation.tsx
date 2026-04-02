@@ -139,8 +139,12 @@ export const MobileNavOverlay: React.FC<{ onClose: () => void }> = ({ onClose })
         animate="visible"
       >
         <a
-          href="#"
-          onClick={onClose}
+          href="#quote"
+          onClick={(e) => {
+            onClose()
+            const el = document.getElementById('quote')
+            if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }) }
+          }}
           className="qf-trigger inline-block px-8 py-3 rounded-full bg-green-600 text-white text-[13px] font-bold tracking-wide hover:bg-green-500 transition-colors"
         >
           Get a Quote

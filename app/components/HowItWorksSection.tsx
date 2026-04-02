@@ -87,7 +87,8 @@ export default function HowItWorksSection() {
           className="flex justify-center mt-16"
         >
           <motion.a
-            href="#"
+            href="#quote"
+            onClick={(e) => { e.preventDefault(); document.getElementById('quote')?.scrollIntoView({ behavior: 'smooth' }) }}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}

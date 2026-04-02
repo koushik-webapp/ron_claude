@@ -3,6 +3,10 @@
 import { useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
 import FloatingNav from '@/components/ui/floating-nav'
+import BookingSection from '../components/BookingSection'
+
+const scrollToQuote = () =>
+  document.getElementById('quote')?.scrollIntoView({ behavior: 'smooth' })
 
 // ─── Service data ─────────────────────────────────────────────────────────────
 
@@ -437,7 +441,8 @@ function MovingDetails() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <motion.a
-                href="/#quote"
+                href="#quote"
+                onClick={(e) => { e.preventDefault(); scrollToQuote() }}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 className="qf-trigger inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white text-slate-900 text-[13px] font-bold tracking-wide shadow-lg hover:bg-blue-50 transition-colors duration-200"
@@ -445,7 +450,8 @@ function MovingDetails() {
                 Get Free Quote
               </motion.a>
               <motion.a
-                href="tel:2018502253"
+                href="#quote"
+                onClick={(e) => { e.preventDefault(); scrollToQuote() }}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-blue-400/40 text-white text-[13px] font-bold tracking-wide hover:border-blue-300 hover:bg-white/5 transition-all duration-200"
@@ -634,7 +640,8 @@ function EliteSecureServices() {
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <motion.a
-              href="/#quote"
+              href="#quote"
+              onClick={(e) => { e.preventDefault(); scrollToQuote() }}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[12px] font-bold tracking-wide text-white"
@@ -819,7 +826,8 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
             {/* CTA */}
             <div className="flex items-center gap-4 pt-2">
               <motion.a
-                href="/#quote"
+                href="#quote"
+                onClick={(e) => { e.preventDefault(); scrollToQuote() }}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[12px] font-bold tracking-wide text-white"
@@ -934,6 +942,9 @@ export default function ServicesPage() {
         </div>
       ))}
 
+      {/* Quote form — same destination for all booking CTAs on this page */}
+      <BookingSection />
+
       {/* Bottom CTA */}
       <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 py-24 text-center">
         <motion.div
@@ -949,7 +960,8 @@ export default function ServicesPage() {
           </h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <motion.a
-              href="/#quote"
+              href="#quote"
+              onClick={(e) => { e.preventDefault(); scrollToQuote() }}
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               className="inline-flex items-center gap-3 px-10 py-4 rounded-full text-[13px] font-bold tracking-wide text-white"
