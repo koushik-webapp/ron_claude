@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
+import { motion, useMotionValue, useTransform, useSpring, type MotionValue } from 'framer-motion'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LEFT PANEL — static sub-components
@@ -49,7 +49,7 @@ const STATS = [
   },
 ]
 
-function LeftPanel({ mouseY }: { mouseY: ReturnType<typeof useMotionValue> }) {
+function LeftPanel({ mouseY }: { mouseY: MotionValue<number> }) {
   return (
     <>
       {/* ── Man — z-10, behind van ────────────────────────────────────────── */}
