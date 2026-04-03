@@ -416,6 +416,7 @@ export default function HeroPremium() {
         <video
           ref={videoRef}
           src="/hero-van-scrub.mp4"
+          poster="/hero-van-loaded.png"
           muted
           playsInline
           preload="auto"
@@ -449,7 +450,7 @@ export default function HeroPremium() {
         initial={{ opacity: 0, y: 8 }}
         animate={isMobile ? { opacity: 1, y: 0 } : undefined}
         transition={{ delay: 0.2, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-        className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[5%] sm:pt-[7%] lg:pt-[9%] pointer-events-none"
+        className="absolute inset-0 z-40 flex flex-col items-center justify-start pt-[72px] sm:pt-[7%] lg:pt-[9%] pointer-events-none"
       >
         {/* lg:pt-[9%] — at 1280×800 this = 72px, giving the headline clear air above the van */}
         {/* Safari fix: pt-[7%] is % of section height (set by JS = window.innerHeight).
