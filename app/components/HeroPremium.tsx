@@ -423,6 +423,7 @@ export default function HeroPremium() {
           className="w-auto h-auto max-w-[96vw] max-h-[68vh] sm:max-h-[84vh] lg:max-w-[calc(100vw-512px)] select-none"
           style={{
             mixBlendMode: 'multiply',
+            backgroundColor: 'white', // video element default fill is black; transparent poster areas reveal it → black × white = black. Force white so transparent areas blend correctly.
             /* Clip only the watermark strip — minimal, not the wheels */
             clipPath: 'inset(0 0 4% 0)',
           }}
