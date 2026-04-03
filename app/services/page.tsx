@@ -583,14 +583,6 @@ function EliteSecureServices() {
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
           className="mb-20"
         >
-          {/* Eyebrow */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-px w-8 bg-green-500/50" />
-            <p className="text-[10px] font-bold tracking-[0.32em] uppercase text-green-500">
-              03 — Protection
-            </p>
-          </div>
-
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
             <div>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.04] mb-0">
