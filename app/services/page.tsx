@@ -190,7 +190,7 @@ function GarbageRemovalDetails() {
   const headerInView = useInView(headerRef, { once: true })
 
   return (
-    <section id="garbage-removal" className="bg-slate-50 border-t border-slate-100" style={{ scrollMarginTop: '60px' }}>
+    <section className="bg-slate-50 border-t border-slate-100">
       <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 py-24">
 
         {/* Section header */}
@@ -251,6 +251,49 @@ function GarbageRemovalDetails() {
                   {item}
                 </span>
               ))}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          className="rounded-3xl overflow-hidden relative"
+          style={{ background: 'linear-gradient(135deg, #1c1407 0%, #2a1e0e 50%, #451a03 100%)' }}
+        >
+          <div className="absolute inset-0 opacity-10" style={{
+            backgroundImage: 'radial-gradient(circle at 20% 50%, #f59e0b 0%, transparent 50%), radial-gradient(circle at 80% 20%, #fbbf24 0%, transparent 40%)'
+          }} />
+          <div className="relative px-8 md:px-16 py-16 flex flex-col md:flex-row items-center justify-between gap-8">
+            <div>
+              <p className="text-[10px] font-bold tracking-[0.28em] uppercase text-amber-400 mb-3">Same-Day Available</p>
+              <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tight leading-[1.1] mb-3">
+                Ready to clear it out?
+              </h3>
+              <p className="text-[15px] text-amber-100/70 leading-relaxed max-w-[380px]">
+                Book in minutes or give us a call. We'll show up with a truck and a crew — same day.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+              <motion.a
+                href="#"
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                className="qf-trigger inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-amber-500 text-slate-900 text-[13px] font-bold tracking-wide shadow-lg hover:bg-amber-400 transition-colors duration-200"
+              >
+                Get Free Quote
+              </motion.a>
+              <motion.a
+                href="#"
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.97 }}
+                className="qf-trigger inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-amber-500/40 text-white text-[13px] font-bold tracking-wide hover:border-amber-400 hover:bg-white/5 transition-all duration-200"
+              >
+                Book Now →
+              </motion.a>
             </div>
           </div>
         </motion.div>
@@ -924,10 +967,10 @@ export default function ServicesPage() {
       </div>
 
       {/* Service blocks */}
-      <GarbageRemovalDetails />
-      {SERVICES.filter(s => s.id !== 'garbage-removal').map((service, i) => (
+      {SERVICES.map((service, i) => (
         <div key={service.id}>
           <ServiceBlock service={service} index={i} />
+          {service.id === 'garbage-removal' && <GarbageRemovalDetails />}
           {service.id === 'moving' && <MovingDetails />}
           {service.id === 'security' && <EliteSecureServices />}
         </div>
