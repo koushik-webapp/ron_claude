@@ -123,9 +123,9 @@ const SOCIALS = [
 ]
 
 const NAV_LINKS = [
-  { label: 'About',   href: '#about'   },
-  { label: 'FAQ',     href: '#faq'     },
-  { label: 'Gallery', href: '#gallery' },
+  { label: 'About',   href: '/'        },
+  { label: 'FAQ',     href: '/#faq'    },
+  { label: 'Gallery', href: '/gallery' },
   { label: 'Contact', href: '#contact' },
 ]
 
