@@ -430,6 +430,120 @@ function JobCard({
   )
 }
 
+// ─── Mobile Video Tiles ───────────────────────────────────────────────────────
+// These replicate the desktop first-frame useEffect so iOS shows a thumbnail
+// instead of a black box. preload="metadata" loads nothing on iOS; preload="auto"
+// combined with vid.load() + loadedmetadata + play/pause forces the first frame.
+
+function MobileReviewTile({ review, index, onOpen }: { review: Review; index: number; onOpen: () => void }) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const vid = videoRef.current
+    if (!vid) return
+    const showFirstFrame = () => {
+      vid.currentTime = 0.1
+      vid.muted = true
+      vid.play().then(() => vid.pause()).catch(() => {})
+    }
+    if (vid.readyState >= 1) {
+      showFirstFrame()
+    } else {
+      vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
+      vid.load()
+    }
+  }, [])
+
+  return (
+    <motion.div
+      key={review.id}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: index * 0.08 }}
+      className="relative overflow-hidden rounded-2xl cursor-pointer"
+      style={{ height: '175px', background: '#0f0f0f' }}
+      onClick={onOpen}
+    >
+      <video
+        ref={videoRef}
+        src={review.src}
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ objectPosition: 'top center', opacity: 0.72 }}
+      />
+      <div
+        className="absolute inset-0"
+        style={{ background: 'linear-gradient(175deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%)' }}
+      />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}>
+          <div style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '6px 0 6px 12px', borderColor: 'transparent transparent transparent white', marginLeft: '2px' }} />
+        </div>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 p-3">
+        <p className="text-white font-bold text-[12px] leading-tight">{review.title}</p>
+        <p className="text-zinc-400 text-[10px]">{review.location}</p>
+      </div>
+    </motion.div>
+  )
+}
+
+function MobileJobTile({ item, index, onOpen }: { item: JobItem; index: number; onOpen: () => void }) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const vid = videoRef.current
+    if (!vid) return
+    const showFirstFrame = () => {
+      vid.currentTime = 0.1
+      vid.muted = true
+      vid.play().then(() => vid.pause()).catch(() => {})
+    }
+    if (vid.readyState >= 1) {
+      showFirstFrame()
+    } else {
+      vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
+      vid.load()
+    }
+  }, [])
+
+  return (
+    <motion.div
+      key={item.id}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: index * 0.08 }}
+      className="relative overflow-hidden rounded-2xl cursor-pointer"
+      style={{ height: '175px', background: '#0f0f0f' }}
+      onClick={onOpen}
+    >
+      <video
+        ref={videoRef}
+        src={item.src}
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ objectPosition: 'top center', opacity: 0.72 }}
+      />
+      <div className="absolute inset-0" style={{ background: 'linear-gradient(175deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%)' }} />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}>
+          <div style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '6px 0 6px 12px', borderColor: 'transparent transparent transparent white', marginLeft: '2px' }} />
+        </div>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 p-3">
+        <p className="text-white font-bold text-[12px] leading-tight">{item.title}</p>
+        <p className="text-zinc-400 text-[10px]">{item.tag}</p>
+      </div>
+    </motion.div>
+  )
+}
+
 // ─── Section ──────────────────────────────────────────────────────────────────
 
 export default function GallerySection() {
@@ -509,53 +623,12 @@ export default function GallerySection() {
           {/* Mobile: 2-col grid, tap to open */}
           <div className="grid grid-cols-2 gap-3 md:hidden">
             {REVIEWS.map((review, i) => (
-              <motion.div
+              <MobileReviewTile
                 key={review.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="relative overflow-hidden rounded-2xl cursor-pointer"
-                style={{ height: '175px', background: '#0f0f0f' }}
-                onClick={() => setActiveVideo(review.src)}
-              >
-                <video
-                  src={review.src}
-                  muted
-                  playsInline
-                  preload="metadata"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{ objectPosition: 'top center', opacity: 0.72 }}
-                />
-                <div
-                  className="absolute inset-0"
-                  style={{
-                    background:
-                      'linear-gradient(175deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%)',
-                  }}
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center"
-                    style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
-                  >
-                    <div
-                      style={{
-                        width: 0,
-                        height: 0,
-                        borderStyle: 'solid',
-                        borderWidth: '6px 0 6px 12px',
-                        borderColor: 'transparent transparent transparent white',
-                        marginLeft: '2px',
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <p className="text-white font-bold text-[12px] leading-tight">{review.title}</p>
-                  <p className="text-zinc-400 text-[10px]">{review.location}</p>
-                </div>
-              </motion.div>
+                review={review}
+                index={i}
+                onOpen={() => setActiveVideo(review.src)}
+              />
             ))}
           </div>
         </motion.div>
@@ -591,35 +664,12 @@ export default function GallerySection() {
           {/* Mobile: 2-col grid */}
           <div className="grid grid-cols-2 gap-3 md:hidden">
             {JOB_ITEMS.map((item, i) => (
-              <motion.div
+              <MobileJobTile
                 key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.08 }}
-                className="relative overflow-hidden rounded-2xl cursor-pointer"
-                style={{ height: '175px', background: '#0f0f0f' }}
-                onClick={() => setActiveVideo(item.src)}
-              >
-                <video
-                  src={item.src}
-                  muted
-                  playsInline
-                  preload="metadata"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{ objectPosition: 'top center', opacity: 0.72 }}
-                />
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(175deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%)' }} />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}>
-                    <div style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '6px 0 6px 12px', borderColor: 'transparent transparent transparent white', marginLeft: '2px' }} />
-                  </div>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <p className="text-white font-bold text-[12px] leading-tight">{item.title}</p>
-                  <p className="text-zinc-400 text-[10px]">{item.tag}</p>
-                </div>
-              </motion.div>
+                item={item}
+                index={i}
+                onOpen={() => setActiveVideo(item.src)}
+              />
             ))}
           </div>
         </motion.div>
