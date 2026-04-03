@@ -585,6 +585,9 @@ function EliteSecureServices() {
         >
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
             <div>
+              <p className="text-[10px] font-bold tracking-[0.32em] uppercase text-green-500 mb-6">
+                Protection
+              </p>
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.04] mb-0">
                 Elite Secure<br />
                 <span className="text-green-500">
