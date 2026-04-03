@@ -449,11 +449,10 @@ function MovingDetails() {
                 Get Free Quote
               </motion.a>
               <motion.a
-                href="#quote"
-                onClick={(e) => { e.preventDefault(); scrollToQuote() }}
+                href="#"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-blue-400/40 text-white text-[13px] font-bold tracking-wide hover:border-blue-300 hover:bg-white/5 transition-all duration-200"
+                className="qf-trigger inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full border border-blue-400/40 text-white text-[13px] font-bold tracking-wide hover:border-blue-300 hover:bg-white/5 transition-all duration-200"
               >
                 Book Now →
               </motion.a>
@@ -639,11 +638,10 @@ function EliteSecureServices() {
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <motion.a
-              href="#quote"
-              onClick={(e) => { e.preventDefault(); scrollToQuote() }}
+              href="#"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[12px] font-bold tracking-wide text-white"
+              className="qf-trigger inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[12px] font-bold tracking-wide text-white"
               style={{
                 background: 'linear-gradient(135deg, #16a34a 0%, #15803d 60%, #166534 100%)',
                 boxShadow: '0 0 0 1px rgba(74,222,128,0.25), 0 8px 24px rgba(22,163,74,0.20)',
@@ -825,11 +823,10 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
             {/* CTA */}
             <div className="flex items-center gap-4 pt-2">
               <motion.a
-                href="#quote"
-                onClick={(e) => { e.preventDefault(); scrollToQuote() }}
+                href="#"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[12px] font-bold tracking-wide text-white"
+                className="qf-trigger inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full text-[12px] font-bold tracking-wide text-white"
                 style={{
                   background: `linear-gradient(135deg, rgba(${service.accentRgb},0.9) 0%, rgba(${service.accentRgb},0.7) 100%)`,
                   boxShadow: `0 0 0 1px rgba(${service.accentRgb},0.30), 0 8px 24px rgba(${service.accentRgb},0.20)`,
@@ -956,11 +953,10 @@ export default function ServicesPage() {
           </h2>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <motion.a
-              href="#quote"
-              onClick={(e) => { e.preventDefault(); scrollToQuote() }}
+              href="#"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex items-center gap-3 px-10 py-4 rounded-full text-[13px] font-bold tracking-wide text-white"
+              className="qf-trigger inline-flex items-center gap-3 px-10 py-4 rounded-full text-[13px] font-bold tracking-wide text-white"
               style={{
                 background: 'linear-gradient(135deg, #16a34a 0%, #15803d 60%, #166534 100%)',
                 boxShadow: '0 0 0 1px rgba(74,222,128,0.25), 0 8px 32px rgba(22,163,74,0.28)',
