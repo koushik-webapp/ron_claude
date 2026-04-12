@@ -157,9 +157,10 @@ const CFG = {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function HeroPremium() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const videoRef   = useRef<HTMLVideoElement>(null)
-  const progress   = useMotionValue(0)
+  const sectionRef    = useRef<HTMLElement>(null)
+  const videoRef      = useRef<HTMLVideoElement>(null)
+  const posterImgRef  = useRef<HTMLImageElement>(null)
+  const progress      = useMotionValue(0)
 
   // ── Mobile blank-screen fix ───────────────────────────────────────────────
   // On mobile, tagOp starts at 0 (progress=0 < tagStart=0.82) and stays at 0
@@ -206,18 +207,12 @@ export default function HeroPremium() {
     return progress.on('change', v => setServicesIn(v >= CFG.tagStart))
   }, [progress])
 
-  // ── Prime video for instant seeking ──────────────────────────────────────
-  useEffect(() => {
-    const v = videoRef.current
-    if (!v) return
-    const prime = () => { v.play().then(() => { v.pause() }).catch(() => {}) }
-    if (v.readyState >= 3) prime()
-    else v.addEventListener('canplaythrough', prime, { once: true })
-    // iOS Safari won't buffer until a user gesture — unlock on first touch
-    const unlockOnTouch = () => { prime(); document.removeEventListener('touchstart', unlockOnTouch) }
-    document.addEventListener('touchstart', unlockOnTouch, { passive: true })
-    return () => document.removeEventListener('touchstart', unlockOnTouch)
-  }, [])
+  // ── Prime video for instant seeking (iOS only) ───────────────────────────
+  // Desktop browsers allow setting currentTime without a prior play() call,
+  // so we do NOT prime eagerly — that would immediately replace the correct
+  // initial frame image with the video's black frame 0 before any scroll.
+  // iOS Safari requires a user-gesture play() before seeking; we handle that
+  // inside the scrub useEffect's onTouchStart handler below.
 
   // ── Scrub timeline ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -245,6 +240,21 @@ export default function HeroPremium() {
     let rafId        = 0
     let prevAbsDelta = 0
     let pageReleased = false
+
+    // ── iOS prime + initial-frame dismissal ───────────────────────────────
+    // Fade out the initial-frame <img> overlay via direct DOM ref (no React
+    // re-render) on the first user scroll interaction.
+    let primed = false
+    const v = videoRef.current
+    const prime = () => {
+      if (primed || !v) return
+      primed = true
+      v.play().then(() => v.pause()).catch(() => {})
+    }
+    const hidePoster = () => {
+      const img = posterImgRef.current
+      if (img && img.style.opacity !== '0') img.style.opacity = '0'
+    }
 
     const lockPage    = () => { document.body.style.overflow = 'hidden' }
     const releasePage = () => { document.body.style.overflow = ''       }

@@ -17,7 +17,15 @@
       "Bash(ls e:/ron_claude/public/hero-van*.png)",
       "Bash(ls -t C:/Users/sonuk/Downloads/*.png)",
       "Bash(find /e/ron_claude -type f -name *hero* -o -name *Hero*)",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(cp \"C:/Users/sonuk/Downloads/local_moving.jpg\" \"e:/ron_claude/public/local_moving.jpg\")",
+      "Bash(cp \"C:/Users/sonuk/Downloads/long_distance_moving.jpg\" \"e:/ron_claude/public/long_distance_moving.jpg\")",
+      "Bash(cp \"C:/Users/sonuk/Downloads/residental_moving.jpg\" \"e:/ron_claude/public/residental_moving.jpg\")",
+      "Bash(cp \"C:/Users/sonuk/Downloads/commercial_moving.jpg\" \"e:/ron_claude/public/commercial_moving.jpg\")",
+      "Bash(cp \"C:/Users/sonuk/Downloads/packing_services.jpg\" \"e:/ron_claude/public/packing_services.jpg\")",
+      "Bash(cp \"C:/Users/sonuk/Downloads/unpacking_service.jpg\" \"e:/ron_claude/public/unpacking_service.jpg\")",
+      "Bash(cp \"C:/Users/sonuk/Downloads/furniture_assembly.jpg\" \"e:/ron_claude/public/furniture_assembly.jpg\")",
+      "Bash(cp \"C:/Users/sonuk/Downloads/heavy_item_moving.jpg\" \"e:/ron_claude/public/heavy_item_moving.jpg\")"
     ]
   }
 }
