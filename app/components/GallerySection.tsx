@@ -7,6 +7,7 @@ import { motion, useInView, AnimatePresence } from 'framer-motion'
 
 type Review = {
   id: number
+  type?: 'photo' | 'video'
   title: string
   location: string
   service: string
@@ -65,6 +66,28 @@ const REVIEWS: Review[] = [
     service: 'Moving',
     src: '/gallery/reviews/review-5.mp4',
   },
+  {
+    id: 6,
+    title: 'Customer Review',
+    location: 'New Jersey',
+    service: 'Moving',
+    src: '/gallery/reviews/review-6.mp4',
+  },
+  {
+    id: 7,
+    title: 'Customer Review',
+    location: 'New Jersey',
+    service: 'Moving',
+    src: '/gallery/reviews/review-7.mp4',
+  },
+  {
+    id: 8,
+    type: 'photo',
+    title: 'Happy Customer',
+    location: 'Cincinnati, Ohio',
+    service: 'Moving',
+    src: '/gallery/reviews/review-photo-1.jpg',
+  },
 ]
 
 const JOB_ITEMS: JobItem[] = [
@@ -101,11 +124,56 @@ const JOB_ITEMS: JobItem[] = [
     src: '/gallery/jobs/job-3.mp4',
     featured: false,
   },
+  {
+    id: 5,
+    type: 'video',
+    title: 'On the Job',
+    location: 'New Jersey',
+    tag: 'Hauling',
+    tagColor: '#f59e0b',
+    tagRgb: '245,158,11',
+    src: '/gallery/jobs/job-5.mp4',
+    featured: false,
+  },
+  {
+    id: 7,
+    type: 'photo',
+    title: 'On the Job',
+    location: 'New Jersey',
+    tag: 'Garbage Removal',
+    tagColor: '#4ade80',
+    tagRgb: '74,222,128',
+    src: '/gallery/jobs/job-photo-1.jpg',
+    featured: false,
+  },
+  {
+    id: 8,
+    type: 'photo',
+    title: 'Happy Customer',
+    location: 'North Carolina',
+    tag: 'Moving',
+    tagColor: '#60a5fa',
+    tagRgb: '96,165,250',
+    src: '/gallery/jobs/job-photo-2.jpg',
+    featured: false,
+  },
+  {
+    id: 10,
+    type: 'photo',
+    title: 'Packing Services',
+    location: 'New Jersey',
+    tag: 'Packing',
+    tagColor: '#a78bfa',
+    tagRgb: '167,139,250',
+    src: '/gallery/jobs/job-photo-4.jpg',
+    featured: false,
+  },
 ]
 
 // ─── Video Modal ──────────────────────────────────────────────────────────────
 
 function VideoModal({ src, onClose }: { src: string; onClose: () => void }) {
+  const isPhoto = /\.(jpg|jpeg|png|webp|gif)$/i.test(src)
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm"
@@ -122,15 +190,23 @@ function VideoModal({ src, onClose }: { src: string; onClose: () => void }) {
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         onClick={(e) => e.stopPropagation()}
       >
-        <video
-          src={src}
-          controls
-          autoPlay
-          playsInline
-          muted
-          className="w-full rounded-2xl"
-          style={{ maxHeight: '78vh' }}
-        />
+        {isPhoto ? (
+          <img
+            src={src}
+            alt=""
+            className="w-full rounded-2xl"
+            style={{ maxHeight: '78vh', objectFit: 'contain' }}
+          />
+        ) : (
+          <video
+            src={src}
+            controls
+            autoPlay
+            playsInline
+            className="w-full rounded-2xl"
+            style={{ maxHeight: '78vh' }}
+          />
+        )}
         <button
           onClick={onClose}
           className="absolute -top-4 -right-4 w-9 h-9 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:text-white transition-colors"
@@ -169,6 +245,7 @@ function ReviewTile({
 
   // Show first frame as thumbnail on mount — play+pause forces the browser to decode and paint the frame
   useEffect(() => {
+    if (review.type === 'photo') return
     const vid = videoRef.current
     if (!vid) return
     const showFirstFrame = () => {
@@ -182,9 +259,10 @@ function ReviewTile({
       vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
       vid.load()
     }
-  }, [])
+  }, [review.type])
 
   useEffect(() => {
+    if (review.type === 'photo') return
     const vid = videoRef.current
     if (!vid) return
     if (isHovered) {
@@ -199,7 +277,7 @@ function ReviewTile({
       vid.currentTime = 0.1
       vid.muted = true
     }
-  }, [isHovered])
+  }, [isHovered, review.type])
 
   return (
     <motion.div
@@ -211,8 +289,7 @@ function ReviewTile({
       onMouseLeave={onLeave}
       onClick={onOpen}
       style={{
-        flex: '1 1 0%',
-        minWidth: 0,
+        width: '100%',
         height: '320px',
         position: 'relative',
         overflow: 'hidden',
@@ -221,35 +298,50 @@ function ReviewTile({
         background: '#0f0f0f',
       }}
     >
-      {/* Thumbnail (shown when idle) */}
-      {!thumbError && review.thumb && (
+      {review.type === 'photo' ? (
         <img
-          src={review.thumb}
+          src={review.src}
           alt={review.title}
           className="absolute inset-0 w-full h-full object-cover"
           style={{
-            opacity: isHovered ? 0 : 0.68,
-            transition: 'opacity 0.35s ease',
+            objectPosition: 'top center',
+            opacity: isHovered ? 1 : 0.72,
+            transition: 'opacity 0.4s ease',
           }}
-          onError={() => setThumbError(true)}
         />
-      )}
+      ) : (
+        <>
+          {/* Thumbnail (shown when idle) */}
+          {!thumbError && review.thumb && (
+            <img
+              src={review.thumb}
+              alt={review.title}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{
+                opacity: isHovered ? 0 : 0.68,
+                transition: 'opacity 0.35s ease',
+              }}
+              onError={() => setThumbError(true)}
+            />
+          )}
 
-      {/* Video — shows first frame at rest, plays on hover */}
-      <video
-        ref={videoRef}
-        src={review.src}
-        playsInline
-        loop
-        preload="auto"
-        muted
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{
-          objectPosition: 'top center',
-          opacity: isHovered ? 1 : 0.72,
-          transition: 'opacity 0.4s ease',
-        }}
-      />
+          {/* Video — shows first frame at rest, plays on hover */}
+          <video
+            ref={videoRef}
+            src={review.src}
+            playsInline
+            loop
+            preload="auto"
+            muted
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{
+              objectPosition: 'top center',
+              opacity: isHovered ? 1 : 0.72,
+              transition: 'opacity 0.4s ease',
+            }}
+          />
+        </>
+      )}
 
       {/* Dark gradient */}
       <div
@@ -271,27 +363,29 @@ function ReviewTile({
         }}
       />
 
-      {/* Play icon (idle state) */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{ opacity: isHovered ? 0 : 1, transition: 'opacity 0.25s ease' }}
-      >
+      {/* Play icon (idle state) — videos only */}
+      {review.type !== 'photo' && (
         <div
-          className="w-11 h-11 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          style={{ opacity: isHovered ? 0 : 1, transition: 'opacity 0.25s ease' }}
         >
           <div
-            style={{
-              width: 0,
-              height: 0,
-              borderStyle: 'solid',
-              borderWidth: '7px 0 7px 13px',
-              borderColor: 'transparent transparent transparent white',
-              marginLeft: '2px',
-            }}
-          />
+            className="w-11 h-11 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
+          >
+            <div
+              style={{
+                width: 0,
+                height: 0,
+                borderStyle: 'solid',
+                borderWidth: '7px 0 7px 13px',
+                borderColor: 'transparent transparent transparent white',
+                marginLeft: '2px',
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Bottom info */}
       <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-none">
@@ -317,6 +411,7 @@ function JobCard({
   const [hovered, setHovered] = useState(false)
 
   useEffect(() => {
+    if (item.type === 'photo') return
     const vid = videoRef.current
     if (!vid) return
     const showFirstFrame = () => {
@@ -330,9 +425,10 @@ function JobCard({
       vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
       vid.load()
     }
-  }, [])
+  }, [item.type])
 
   useEffect(() => {
+    if (item.type === 'photo') return
     const vid = videoRef.current
     if (!vid) return
     if (hovered) {
@@ -342,7 +438,7 @@ function JobCard({
       vid.pause()
       vid.currentTime = 0.1
     }
-  }, [hovered])
+  }, [hovered, item.type])
 
   return (
     <motion.div
@@ -354,9 +450,7 @@ function JobCard({
       onMouseLeave={() => setHovered(false)}
       onClick={() => onPlayVideo(item.src)}
       style={{
-        flex: '0 0 calc(20% - 10px)',
-        width: 'calc(20% - 10px)',
-        minWidth: 0,
+        width: '100%',
         height: '320px',
         position: 'relative',
         overflow: 'hidden',
@@ -365,21 +459,34 @@ function JobCard({
         background: '#0f0f0f',
       }}
     >
-      {/* Video — first frame as thumbnail, plays muted on hover */}
-      <video
-        ref={videoRef}
-        src={item.src}
-        muted
-        playsInline
-        loop
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{
-          objectPosition: 'top center',
-          opacity: hovered ? 1 : 0.72,
-          transition: 'opacity 0.4s ease',
-        }}
-      />
+      {/* Media — photo or video */}
+      {item.type === 'photo' ? (
+        <img
+          src={item.src}
+          alt={item.title}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            objectPosition: 'top center',
+            opacity: hovered ? 1 : 0.72,
+            transition: 'opacity 0.4s ease',
+          }}
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          src={item.src}
+          muted
+          playsInline
+          loop
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            objectPosition: 'top center',
+            opacity: hovered ? 1 : 0.72,
+            transition: 'opacity 0.4s ease',
+          }}
+        />
+      )}
 
       {/* Dark gradient */}
       <div
@@ -400,26 +507,28 @@ function JobCard({
         }}
       />
 
-      {/* Play icon */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{ opacity: hovered ? 0 : 1, transition: 'opacity 0.25s ease' }}
-      >
+      {/* Play icon — videos only */}
+      {item.type === 'video' && (
         <div
-          className="w-11 h-11 rounded-full flex items-center justify-center"
-          style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          style={{ opacity: hovered ? 0 : 1, transition: 'opacity 0.25s ease' }}
         >
           <div
-            style={{
-              width: 0, height: 0,
-              borderStyle: 'solid',
-              borderWidth: '7px 0 7px 13px',
-              borderColor: 'transparent transparent transparent white',
-              marginLeft: '2px',
-            }}
-          />
+            className="w-11 h-11 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(255,255,255,0.10)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}
+          >
+            <div
+              style={{
+                width: 0, height: 0,
+                borderStyle: 'solid',
+                borderWidth: '7px 0 7px 13px',
+                borderColor: 'transparent transparent transparent white',
+                marginLeft: '2px',
+              }}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Bottom info */}
       <div className="absolute bottom-0 left-0 right-0 p-4 pointer-events-none">
@@ -439,6 +548,7 @@ function MobileReviewTile({ review, index, onOpen }: { review: Review; index: nu
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
+    if (review.type === 'photo') return
     const vid = videoRef.current
     if (!vid) return
     const showFirstFrame = () => {
@@ -452,7 +562,7 @@ function MobileReviewTile({ review, index, onOpen }: { review: Review; index: nu
       vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
       vid.load()
     }
-  }, [])
+  }, [review.type])
 
   return (
     <motion.div
@@ -465,24 +575,35 @@ function MobileReviewTile({ review, index, onOpen }: { review: Review; index: nu
       style={{ height: '175px', background: '#0f0f0f' }}
       onClick={onOpen}
     >
-      <video
-        ref={videoRef}
-        src={review.src}
-        muted
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ objectPosition: 'top center', opacity: 0.72 }}
-      />
+      {review.type === 'photo' ? (
+        <img
+          src={review.src}
+          alt={review.title}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: 'top center', opacity: 0.72 }}
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          src={review.src}
+          muted
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: 'top center', opacity: 0.72 }}
+        />
+      )}
       <div
         className="absolute inset-0"
         style={{ background: 'linear-gradient(175deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%)' }}
       />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}>
-          <div style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '6px 0 6px 12px', borderColor: 'transparent transparent transparent white', marginLeft: '2px' }} />
+      {review.type !== 'photo' && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}>
+            <div style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '6px 0 6px 12px', borderColor: 'transparent transparent transparent white', marginLeft: '2px' }} />
+          </div>
         </div>
-      </div>
+      )}
       <div className="absolute bottom-0 left-0 right-0 p-3">
         <p className="text-white font-bold text-[12px] leading-tight">{review.title}</p>
         <p className="text-zinc-400 text-[10px]">{review.location}</p>
@@ -495,6 +616,7 @@ function MobileJobTile({ item, index, onOpen }: { item: JobItem; index: number; 
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
+    if (item.type === 'photo') return
     const vid = videoRef.current
     if (!vid) return
     const showFirstFrame = () => {
@@ -508,7 +630,7 @@ function MobileJobTile({ item, index, onOpen }: { item: JobItem; index: number; 
       vid.addEventListener('loadedmetadata', showFirstFrame, { once: true })
       vid.load()
     }
-  }, [])
+  }, [item.type])
 
   return (
     <motion.div
@@ -521,26 +643,88 @@ function MobileJobTile({ item, index, onOpen }: { item: JobItem; index: number; 
       style={{ height: '175px', background: '#0f0f0f' }}
       onClick={onOpen}
     >
-      <video
-        ref={videoRef}
-        src={item.src}
-        muted
-        playsInline
-        preload="auto"
-        className="absolute inset-0 w-full h-full object-cover"
-        style={{ objectPosition: 'top center', opacity: 0.72 }}
-      />
+      {item.type === 'photo' ? (
+        <img
+          src={item.src}
+          alt={item.title}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: 'top center', opacity: 0.72 }}
+        />
+      ) : (
+        <video
+          ref={videoRef}
+          src={item.src}
+          muted
+          playsInline
+          preload="auto"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: 'top center', opacity: 0.72 }}
+        />
+      )}
       <div className="absolute inset-0" style={{ background: 'linear-gradient(175deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.65) 100%)' }} />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}>
-          <div style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '6px 0 6px 12px', borderColor: 'transparent transparent transparent white', marginLeft: '2px' }} />
+      {item.type === 'video' && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)' }}>
+            <div style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '6px 0 6px 12px', borderColor: 'transparent transparent transparent white', marginLeft: '2px' }} />
+          </div>
         </div>
-      </div>
+      )}
       <div className="absolute bottom-0 left-0 right-0 p-3">
         <p className="text-white font-bold text-[12px] leading-tight">{item.title}</p>
         <p className="text-zinc-400 text-[10px]">{item.tag}</p>
       </div>
     </motion.div>
+  )
+}
+
+// ─── Slider ───────────────────────────────────────────────────────────────────
+
+const SLIDER_GAP = 12
+const SLIDER_VISIBLE = 5
+
+function useSlider() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [index, setIndex] = useState(0)
+  const [containerWidth, setContainerWidth] = useState(0)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const update = () => setContainerWidth(el.offsetWidth)
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    update()
+    return () => ro.disconnect()
+  }, [])
+
+  const cardWidth = containerWidth > 0
+    ? (containerWidth - SLIDER_GAP * (SLIDER_VISIBLE - 1)) / SLIDER_VISIBLE
+    : 220
+
+  return { ref, index, setIndex, cardWidth }
+}
+
+function ArrowButton({ dir, onClick, disabled }: { dir: 'prev' | 'next'; onClick: () => void; disabled: boolean }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className="w-8 h-8 rounded-full flex items-center justify-center transition-all"
+      style={{
+        border: '1px solid',
+        borderColor: disabled ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.18)',
+        color: disabled ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.75)',
+        background: disabled ? 'transparent' : 'rgba(255,255,255,0.04)',
+        cursor: disabled ? 'not-allowed' : 'pointer',
+      }}
+    >
+      <svg viewBox="0 0 16 16" fill="none" className="w-3.5 h-3.5">
+        {dir === 'prev'
+          ? <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          : <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        }
+      </svg>
+    </button>
   )
 }
 
@@ -551,6 +735,10 @@ export default function GallerySection() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
   const [activeVideo, setActiveVideo] = useState<string | null>(null)
   const [hoveredReview, setHoveredReview] = useState<number | null>(null)
+  const reviewSlider = useSlider()
+  const jobSlider = useSlider()
+  const maxReviewIndex = Math.max(0, REVIEWS.length - SLIDER_VISIBLE)
+  const maxJobIndex = Math.max(0, JOB_ITEMS.length - SLIDER_VISIBLE)
 
   return (
     <section className="bg-zinc-950 py-28 px-6 md:px-10 lg:px-20">
@@ -596,28 +784,46 @@ export default function GallerySection() {
               </h3>
             </div>
             <div className="flex-1 h-px bg-zinc-800" />
-            <span className="text-[11px] text-zinc-600 shrink-0 hidden sm:block">
-              Hover to watch
-            </span>
+            <div className="hidden md:flex gap-2 shrink-0">
+              <ArrowButton
+                dir="prev"
+                onClick={() => reviewSlider.setIndex(i => Math.max(0, i - 1))}
+                disabled={reviewSlider.index === 0}
+              />
+              <ArrowButton
+                dir="next"
+                onClick={() => reviewSlider.setIndex(i => Math.min(maxReviewIndex, i + 1))}
+                disabled={reviewSlider.index >= maxReviewIndex}
+              />
+            </div>
           </div>
 
-          {/* Desktop: expanding flex tiles */}
-          <div
-            className="hidden md:flex gap-3"
-            style={{ alignItems: 'flex-start' }}
-          >
-            {REVIEWS.map((review, i) => (
-              <ReviewTile
-                key={review.id}
-                review={review}
-                index={i}
-                isHovered={hoveredReview === review.id}
-                isAnyHovered={hoveredReview !== null}
-                onHover={() => setHoveredReview(review.id)}
-                onLeave={() => setHoveredReview(null)}
-                onOpen={() => setActiveVideo(review.src)}
-              />
-            ))}
+          {/* Desktop: slider */}
+          <div className="hidden md:block">
+            <div ref={reviewSlider.ref} style={{ overflow: 'hidden' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: SLIDER_GAP,
+                  transform: `translateX(-${reviewSlider.index * (reviewSlider.cardWidth + SLIDER_GAP)}px)`,
+                  transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+              >
+                {REVIEWS.map((review, i) => (
+                  <div key={review.id} style={{ flex: `0 0 ${reviewSlider.cardWidth}px`, width: reviewSlider.cardWidth }}>
+                    <ReviewTile
+                      review={review}
+                      index={i}
+                      isHovered={hoveredReview === review.id}
+                      isAnyHovered={hoveredReview !== null}
+                      onHover={() => setHoveredReview(review.id)}
+                      onLeave={() => setHoveredReview(null)}
+                      onOpen={() => setActiveVideo(review.src)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Mobile: 2-col grid, tap to open */}
@@ -652,13 +858,38 @@ export default function GallerySection() {
               </h3>
             </div>
             <div className="flex-1 h-px bg-zinc-800" />
+            <div className="hidden md:flex gap-2 shrink-0">
+              <ArrowButton
+                dir="prev"
+                onClick={() => jobSlider.setIndex(i => Math.max(0, i - 1))}
+                disabled={jobSlider.index === 0}
+              />
+              <ArrowButton
+                dir="next"
+                onClick={() => jobSlider.setIndex(i => Math.min(maxJobIndex, i + 1))}
+                disabled={jobSlider.index >= maxJobIndex}
+              />
+            </div>
           </div>
 
-          {/* Desktop: same flex tile row as reviews */}
-          <div className="hidden md:flex gap-3" style={{ alignItems: 'flex-start', justifyContent: 'flex-start' }}>
-            {JOB_ITEMS.map((item, i) => (
-              <JobCard key={item.id} item={item} index={i} onPlayVideo={setActiveVideo} />
-            ))}
+          {/* Desktop: slider */}
+          <div className="hidden md:block">
+            <div ref={jobSlider.ref} style={{ overflow: 'hidden' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: SLIDER_GAP,
+                  transform: `translateX(-${jobSlider.index * (jobSlider.cardWidth + SLIDER_GAP)}px)`,
+                  transition: 'transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+              >
+                {JOB_ITEMS.map((item, i) => (
+                  <div key={item.id} style={{ flex: `0 0 ${jobSlider.cardWidth}px`, width: jobSlider.cardWidth }}>
+                    <JobCard item={item} index={i} onPlayVideo={setActiveVideo} />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Mobile: 2-col grid */}
