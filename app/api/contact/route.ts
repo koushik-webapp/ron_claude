@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     const safeMessage = esc(message.trim()).replace(/\n/g, '<br/>')
 
     const resend = new Resend(process.env.RESEND_API_KEY)
-    await resend.emails.send({
+    const { error } = await resend.emails.send({
       // TEST SETUP: uses Resend's shared domain — no custom domain needed yet
       from: 'Rainey Removal <onboarding@resend.dev>',
 
@@ -155,6 +155,14 @@ export async function POST(req: NextRequest) {
         </div>
       `,
     })
+
+    if (error) {
+      console.error('[contact/route] Resend API error:', error)
+      return NextResponse.json(
+        { error: 'Failed to send message. Please try again or call us directly.' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json({ success: true })
   } catch (err) {
