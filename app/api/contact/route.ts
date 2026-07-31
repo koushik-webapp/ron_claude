@@ -89,11 +89,7 @@ export async function POST(req: NextRequest) {
 
     const resend = new Resend(process.env.RESEND_API_KEY)
     const { error } = await resend.emails.send({
-      // TEST SETUP: uses Resend's shared domain — no custom domain needed yet
-      from: 'Rainey Removal <onboarding@resend.dev>',
-
-      // ── Replace with business email after domain setup on Vercel ──
-      // from: 'Rainey Removal <leads@yourdomain.com>',
+      from: 'Rainey Removal <noreply@raineyremoval.com>',
 
       to: process.env.CONTACT_RECIPIENT!,
 
