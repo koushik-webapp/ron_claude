@@ -13,6 +13,7 @@ const NAV_LINKS = [
     children: ["Garbage Removal", "Moving (USA)", "Armed Security"],
   },
   { label: "Gallery",      href: "/gallery" },
+  { label: "Promotions",   href: "/promotions" },
 ];
 
 const FloatingNav = () => {

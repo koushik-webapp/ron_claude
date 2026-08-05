@@ -59,9 +59,10 @@ export const TextRoll: React.FC<{
 );
 
 const NAV_ITEMS = [
-  { name: "Home",     href: "/" },
-  { name: "Services", href: "/services" },
-  { name: "Gallery",  href: "/gallery" },
+  { name: "Home",       href: "/" },
+  { name: "Services",   href: "/services" },
+  { name: "Gallery",    href: "/gallery" },
+  { name: "Promotions", href: "/promotions" },
 ];
 
 const itemVariants = {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FloatingNav from "@/components/ui/floating-nav";
+import PromoModal from "./components/PromoModal";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 
@@ -31,6 +32,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <FloatingNav />
+        {/* Promo pop-up + docked bar — self-hides outside the promo date window.
+            Edit the campaign in /app/data/promotions.ts */}
+        <PromoModal />
         {children}
         {/* Premium vanilla JS chatbot — edit at /public/chatbot.js */}
         <Script src="/chatbot.js" strategy="afterInteractive" />
