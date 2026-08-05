@@ -426,14 +426,19 @@ export default function HeroPremium() {
         <video
           ref={videoRef}
           src="/hero-van-scrub.mp4"
-          poster="/hero-van-loaded.png"
+          // Poster MUST be a white-background still, because mixBlendMode:multiply
+          // maps dark pixels → dark. hero-van-loaded.png is a dark studio render
+          // (mean luma 54, fully opaque), so multiply painted it as a black slab
+          // over the white hero until frame 0 decoded. This poster is frame 0 of
+          // the video itself (mean luma 148), so poster → first frame is seamless.
+          poster="/hero-van-poster.jpg"
           muted
           playsInline
           preload="auto"
           className="w-auto h-auto max-w-[96vw] max-h-[68vh] sm:max-h-[84vh] lg:max-w-[calc(100vw-512px)] select-none"
           style={{
             mixBlendMode: 'multiply',
-            backgroundColor: 'white', // video element default fill is black; transparent poster areas reveal it → black × white = black. Force white so transparent areas blend correctly.
+            backgroundColor: 'white', // before the poster itself decodes the element paints only this; white × backdrop = backdrop, so it stays invisible rather than flashing dark.
             /* Clip only the watermark strip — minimal, not the wheels */
             clipPath: 'inset(0 0 4% 0)',
           }}
