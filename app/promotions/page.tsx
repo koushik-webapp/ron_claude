@@ -61,8 +61,7 @@ function PromoEnded() {
             No active promotions right now
           </h1>
           <p className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-zinc-400">
-            Our {P.headlineTop} {P.headlineBottom} special ran {formatPromoRange(P)} and has ended.
-            Check back soon for the next offer — we&apos;re still moving and hauling year-round.
+            Check back soon for our next offer — we&apos;re moving and hauling 24/7, year-round.
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
             <button

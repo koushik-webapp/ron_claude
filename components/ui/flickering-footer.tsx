@@ -204,7 +204,7 @@ export default function FlickeringFooter() {
             </p>
             <div className="space-y-1.5">
               <p className="text-sm text-zinc-300 font-semibold">Monday – Sunday</p>
-              <p className="text-sm text-zinc-500">9:00 am – 6:00 pm EST</p>
+              <p className="text-sm text-zinc-500">Open 24 hours</p>
             </div>
             <div className="mt-2 space-y-2">
               <a
@@ -235,7 +235,7 @@ export default function FlickeringFooter() {
             <p className="text-[11px] text-zinc-300 font-bold uppercase tracking-[0.2em]">Working Hours</p>
             <div className="space-y-1.5">
               <p className="text-sm text-zinc-300 font-semibold">Monday – Sunday</p>
-              <p className="text-sm text-zinc-500">9:00 am – 6:00 pm EST</p>
+              <p className="text-sm text-zinc-500">Open 24 hours</p>
             </div>
             <div className="mt-2 space-y-2">
               <a href="tel:+12018502253" className="flex items-center gap-2 text-[13px] text-zinc-500 hover:text-green-400 transition-colors duration-150">

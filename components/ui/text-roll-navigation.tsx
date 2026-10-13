@@ -63,7 +63,7 @@ const NAV_ITEMS = [
   { name: "Home",       href: "/" },
   { name: "Services",   href: "/services" },
   { name: "Gallery",    href: "/gallery" },
-  { name: "Promotions", href: "/promotions" },
+  // Add { name: "Promotions", href: "/promotions" } back when a new promo runs
 ];
 
 const itemVariants = {

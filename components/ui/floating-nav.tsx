@@ -20,7 +20,7 @@ const NAV_LINKS = [
     ],
   },
   { label: "Gallery",      href: "/gallery" },
-  { label: "Promotions",   href: "/promotions" },
+  // Add { label: "Promotions", href: "/promotions" } back when a new promo runs
 ];
 
 const FloatingNav = () => {
