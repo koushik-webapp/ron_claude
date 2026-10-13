@@ -11,21 +11,23 @@ const item = {
   show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] } },
 }
 
+// 1000px JPEGs in /before-after — the 2752px PNGs they were made from were
+// ~23 MB in total and all downloaded on page load, for 340px-wide cards
 const SCENARIOS = [
   {
     label: 'Garage Cleanout',
-    before: '/garage-before.jpg',
-    after: '/garage-after.png',
+    before: '/before-after/garage-before.jpg',
+    after: '/before-after/garage-after.jpg',
   },
   {
     label: 'Estate Clearance',
-    before: '/estate-before.png',
-    after: '/estate-after.png',
+    before: '/before-after/estate-before.jpg',
+    after: '/before-after/estate-after.jpg',
   },
   {
     label: 'Office Removal',
-    before: '/office-before.png',
-    after: '/office-after.png',
+    before: '/before-after/office-before.jpg',
+    after: '/before-after/office-after.jpg',
   },
 ]
 
@@ -79,6 +81,8 @@ export default function BeforeAfterSection() {
                 <img
                   src={before}
                   alt={`${label} before`}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-48 object-cover"
                 />
               </div>
@@ -99,6 +103,8 @@ export default function BeforeAfterSection() {
                 <img
                   src={after}
                   alt={`${label} after`}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-48 object-cover"
                 />
               </div>

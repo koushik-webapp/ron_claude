@@ -2,10 +2,6 @@
 
 import { useRef, useState } from 'react'
 import { motion, useInView } from 'framer-motion'
-import FloatingNav from '@/components/ui/floating-nav'
-
-const scrollToQuote = () =>
-  document.getElementById('quote')?.scrollIntoView({ behavior: 'smooth' })
 
 // ─── Service data ─────────────────────────────────────────────────────────────
 
@@ -104,7 +100,7 @@ const GARBAGE_SERVICES = [
   {
     title: 'Full Junk Removal',
     desc: 'Single items to full truckloads — fast, no-nonsense hauling with zero headache.',
-    img: '/svc-full-junk.png',
+    img: '/svc-full-junk.jpg',
   },
   {
     title: 'Property Cleanouts',
@@ -168,6 +164,8 @@ function GarbageServiceCard({ item, index }: { item: typeof GARBAGE_SERVICES[0];
         <img
           src={item.img}
           alt={item.title}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -210,7 +208,7 @@ function GarbageRemovalDetails() {
               <span className="text-green-600">One crew to clear it.</span>
             </h2>
             <p className="text-[15px] text-slate-500 leading-relaxed max-w-[340px] md:text-right">
-              From single items to full estate cleanouts — we show up, we haul it, we're done.
+              From single items to full estate cleanouts — we show up, we haul it, we’re done.
             </p>
           </div>
         </motion.div>
@@ -274,7 +272,7 @@ function GarbageRemovalDetails() {
                 Ready to clear it out?
               </h3>
               <p className="text-[15px] text-amber-100/70 leading-relaxed max-w-[380px]">
-                Book in minutes or give us a call. We'll show up with a truck and a crew — same day.
+                Book in minutes or give us a call. We’ll show up with a truck and a crew — same day.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
@@ -373,6 +371,8 @@ function MovingServiceCard({ item, index }: { item: typeof MOVING_SERVICES[0]; i
         <img
           src={item.img}
           alt={item.title}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -478,13 +478,13 @@ function MovingDetails() {
                 Your next chapter starts here.
               </h3>
               <p className="text-[15px] text-blue-100/70 leading-relaxed max-w-[380px]">
-                Get a free quote in minutes. We'll handle the heavy lifting so you can focus on what's next.
+                Get a free quote in minutes. We’ll handle the heavy lifting so you can focus on what’s next.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <motion.a
-                href="#quote"
-                onClick={(e) => { e.preventDefault(); scrollToQuote() }}
+                href="#"
+                onClick={(e) => e.preventDefault()}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
                 className="qf-trigger inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-white text-slate-900 text-[13px] font-bold tracking-wide shadow-lg hover:bg-blue-50 transition-colors duration-200"
@@ -568,6 +568,8 @@ function SecureServiceCard({ item, index }: { item: typeof SECURE_SERVICES[0]; i
         <img
           src={item.img}
           alt={item.title}
+          loading="lazy"
+          decoding="async"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 brightness-75 group-hover:brightness-90"
         />
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(5,10,5,0.85) 0%, rgba(5,10,5,0.3) 60%, transparent 100%)' }} />
@@ -672,7 +674,7 @@ function EliteSecureServices() {
           <div>
             <p className="text-[10px] font-bold tracking-[0.28em] uppercase text-green-500/70 mb-1">Licensed & Insured</p>
             <p className="text-[15px] font-bold text-white">Need a tailored security solution?</p>
-            <p className="text-[13px] text-zinc-600 mt-0.5">Every operation is different. We'll build the right plan for yours.</p>
+            <p className="text-[13px] text-zinc-600 mt-0.5">Every operation is different. We’ll build the right plan for yours.</p>
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <motion.a
@@ -750,6 +752,7 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
               {service.videoSrc && (
                 <motion.video
                   src={service.videoSrc}
+                  poster={service.videoSrc.replace(/^(.*\/)?([^/]+)\.mp4$/, '/videos/posters/$2.jpg')}
                   autoPlay muted loop playsInline
                   className="absolute inset-0 w-full h-full object-cover"
                   animate={{ opacity: hovered ? 0.95 : 0.75 }}
@@ -772,16 +775,20 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
               {/* Overlay */}
               <div className="absolute inset-0" style={{ background: 'linear-gradient(175deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.55) 100%)' }} />
 
-              {/* Scan line */}
+              {/* Scan line — moves a full-size layer with transform rather than
+                  animating `top`, which forced a layout every frame */}
               <motion.div
-                className="absolute left-0 right-0 pointer-events-none"
-                style={{
-                  height: '1px',
-                  background: `linear-gradient(to right, transparent, rgba(${service.accentRgb},0.5), transparent)`,
-                }}
-                animate={{ top: ['0%', '100%'] }}
+                className="absolute inset-0 pointer-events-none"
+                animate={{ y: ['0%', '100%'] }}
                 transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
-              />
+              >
+                <div
+                  style={{
+                    height: '1px',
+                    background: `linear-gradient(to right, transparent, rgba(${service.accentRgb},0.5), transparent)`,
+                  }}
+                />
+              </motion.div>
 
               {/* Border glow */}
               <motion.div
@@ -889,14 +896,14 @@ function ServiceBlock({ service, index }: { service: typeof SERVICES[0]; index: 
 
 export default function ServicesPage() {
   return (
-    <div className="bg-zinc-950 min-h-screen">
-      <FloatingNav />
+    <div className="bg-zinc-950 min-h-screen overflow-x-clip">
 
       {/* ── Fleet Hero ─────────────────────────────────────────────────────── */}
-      <div className="relative w-full" style={{ height: 'calc(100vh - 60px)', marginTop: '60px' }}>
+      <div className="services-hero-height relative w-full" style={{ marginTop: '60px' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="/services-hero.png"
+          src="/services-hero.jpg"
+          fetchPriority="high"
           alt="Rainey Removal LLC fleet — van, box truck, and pickup"
           className="absolute inset-0 w-full h-full object-cover"
           style={{ objectPosition: 'center 85%' }}
@@ -963,6 +970,12 @@ export default function ServicesPage() {
               (201) 850-2253
             </a>
           </div>
+          <a
+            href="tel:2018502253"
+            className="sm:hidden mt-2 inline-flex items-center justify-center gap-2 w-full py-3 rounded-full border border-zinc-600 bg-zinc-900/70 backdrop-blur-sm text-[14px] font-semibold text-white active:border-green-500"
+          >
+            Call (201) 850-2253
+          </a>
         </motion.div>
       </div>
 

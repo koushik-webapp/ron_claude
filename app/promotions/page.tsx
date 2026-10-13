@@ -12,16 +12,27 @@ import {
   GraduationCap,
   CalendarDays,
 } from 'lucide-react'
-import PromoExpiryNotice from '../components/PromoExpiryNotice'
-import { ACTIVE_PROMO, formatPromoRange, type PromoFeature } from '../data/promotions'
-
-export const metadata = {
-  title: 'Promotions | Rainey Removal LLC',
-  description:
-    'Back 2 School Move-In Special — 15% off move-ins for college students, August 1 through September 14. Dorm and off-campus apartment moves, local and long-distance.',
-}
+import type { Metadata } from 'next'
+import { ACTIVE_PROMO, formatPromoRange, hasPromoEndedInNJ, type PromoFeature } from '../data/promotions'
 
 const P = ACTIVE_PROMO
+
+// Re-render at most hourly, so the page switches to the "ended" view on its own
+// once the promo's last day passes — no redeploy, and no flash of the old offer
+export const revalidate = 3600
+
+export function generateMetadata(): Metadata {
+  if (hasPromoEndedInNJ(P)) {
+    return {
+      title: 'Promotions | Rainey Removal LLC',
+      description: 'Current offers from Rainey Removal LLC — moving, junk removal and more across New Jersey and the USA.',
+    }
+  }
+  return {
+    title: 'Promotions | Rainey Removal LLC',
+    description: `${P.headlineTop} ${P.headlineBottom} ${P.subhead.replace(/!$/, '')} — ${P.discountValue} off for ${P.discountAudience.toLowerCase()}, ${formatPromoRange(P)}. Dorm and off-campus apartment moves, local and long-distance.`,
+  }
+}
 
 const ICONS: Record<PromoFeature['icon'], typeof Truck> = {
   truck: Truck,
@@ -37,10 +48,47 @@ const DOTS = {
   backgroundSize: '14px 14px',
 }
 
-export default function PromotionsPage() {
+// Shown once the promo is over, instead of the offer page — an expired
+// "15% off, mention the special" page invites customers to claim it
+function PromoEnded() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-zinc-950 pt-[60px] text-white">
-      <PromoExpiryNotice />
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 opacity-70" style={DOTS} aria-hidden="true" />
+        <div className="relative mx-auto max-w-2xl px-6 py-24 text-center md:px-10 md:py-32">
+          <p className="text-[11px] font-black uppercase tracking-[0.22em] text-lime-400">Promotions</p>
+          <h1 className="mt-4 text-4xl font-black tracking-tight sm:text-5xl">
+            No active promotions right now
+          </h1>
+          <p className="mx-auto mt-5 max-w-md text-[15px] leading-relaxed text-zinc-400">
+            Our {P.headlineTop} {P.headlineBottom} special ran {formatPromoRange(P)} and has ended.
+            Check back soon for the next offer — we&apos;re still moving and hauling year-round.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+            <button
+              type="button"
+              className="qf-trigger rounded-full bg-lime-400 px-8 py-3.5 text-[12px] font-black uppercase tracking-[0.10em] text-zinc-950 transition-colors hover:bg-lime-300"
+            >
+              Get a Free Quote
+            </button>
+            <a
+              href={P.contact.phoneHref}
+              className="rounded-full border border-zinc-700 px-8 py-3.5 text-[12px] font-bold uppercase tracking-[0.10em] text-zinc-200 transition-colors hover:border-lime-400 hover:text-lime-400"
+            >
+              Call {P.contact.phone}
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+  )
+}
+
+export default function PromotionsPage() {
+  if (hasPromoEndedInNJ(P)) return <PromoEnded />
+
+  return (
+    <main className="min-h-screen overflow-x-hidden bg-zinc-950 pt-[60px] text-white">
 
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden border-b border-zinc-800">

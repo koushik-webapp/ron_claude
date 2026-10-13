@@ -10,6 +10,10 @@ const RATE_WINDOW = 60_000
 
 function isRateLimited(ip: string): boolean {
   const now = Date.now()
+  // Drop expired entries now and then so the map can't grow without bound
+  if (rateMap.size > 1000) {
+    for (const [key, entry] of rateMap) if (now > entry.reset) rateMap.delete(key)
+  }
   const entry = rateMap.get(ip)
   if (!entry || now > entry.reset) {
     rateMap.set(ip, { count: 1, reset: now + RATE_WINDOW })
@@ -30,6 +34,14 @@ function esc(str: string): string {
     .replace(/'/g, '&#39;')
 }
 
+const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '')
+
+// Strict enough that the address can't smuggle ?subject=/&body= into the mailto link
+const EMAIL_RE = /^[A-Za-z0-9._%+'-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+
+// The quote form appends "Please try again, or call (201) 850-2253."
+const SEND_FAILED = 'We couldn’t send your request right now.'
+
 export async function GET() {
   return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
 }
@@ -48,55 +60,84 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  let body: Record<string, unknown>
   try {
-    const body = await req.json()
-    const { name, email, phone, message, honeypot } = body
+    const parsed = await req.json()
+    body = parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return NextResponse.json({ error: 'Invalid request.' }, { status: 400 })
+  }
 
-    // Spam protection — honeypot field should always be empty
-    if (honeypot) {
-      return NextResponse.json({ success: true }) // silently discard
-    }
+  // Spam protection — honeypot field should always be empty
+  if (body.honeypot) {
+    return NextResponse.json({ success: true }) // silently discard
+  }
 
-    // Validation
-    if (!name?.trim() || !email?.trim() || !phone?.trim() || !message?.trim()) {
-      return NextResponse.json(
-        { error: 'All fields are required.' },
-        { status: 400 }
-      )
-    }
+  const name = str(body.name)
+  const email = str(body.email) // optional — the quote form marks it that way
+  const phone = str(body.phone)
+  const message = str(body.message)
 
-    // Input length limits
-    if (name.length > 100 || email.length > 254 || phone.length > 30 || message.length > 5000) {
-      return NextResponse.json(
-        { error: 'Input exceeds maximum allowed length.' },
-        { status: 400 }
-      )
-    }
+  // Validation
+  if (!name || !phone || !message) {
+    return NextResponse.json(
+      { error: 'Please fill in your name, phone number and request details.' },
+      { status: 400 }
+    )
+  }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Please enter a valid email address.' },
-        { status: 400 }
-      )
-    }
+  // Input length limits
+  if (name.length > 100 || email.length > 254 || phone.length > 40 || message.length > 5000) {
+    return NextResponse.json(
+      { error: 'Input exceeds maximum allowed length.' },
+      { status: 400 }
+    )
+  }
 
-    // Sanitize all user input before inserting into HTML
-    const safeName    = esc(name.trim())
-    const safeEmail   = esc(email.trim())
-    const safePhone   = esc(phone.trim())
-    const safeMessage = esc(message.trim()).replace(/\n/g, '<br/>')
+  if (phone.replace(/\D/g, '').length < 7) {
+    return NextResponse.json(
+      { error: 'Please enter a valid phone number.' },
+      { status: 400 }
+    )
+  }
 
-    const resend = new Resend(process.env.RESEND_API_KEY)
+  if (email && !EMAIL_RE.test(email)) {
+    return NextResponse.json(
+      { error: 'Please enter a valid email address, or leave it blank.' },
+      { status: 400 }
+    )
+  }
+
+  // If the email can't be sent, the lead still lands in the server logs
+  const logLead = (reason: string, detail?: unknown) =>
+    console.error(`[contact/route] ${reason} — lead not emailed:`, { name, phone, email, message }, detail ?? '')
+
+  const apiKey = process.env.RESEND_API_KEY
+  const recipient = process.env.CONTACT_RECIPIENT
+  if (!apiKey || !recipient) {
+    logLead('RESEND_API_KEY or CONTACT_RECIPIENT is not set')
+    return NextResponse.json({ error: SEND_FAILED }, { status: 500 })
+  }
+
+  // Sanitize all user input before inserting into HTML
+  const safeName    = esc(name)
+  const safeEmail   = esc(email)
+  const safePhone   = esc(phone)
+  const safeMessage = esc(message).replace(/\n/g, '<br/>')
+  const service     = message.match(/^Service: (.+)$/m)?.[1]
+
+  try {
+    const resend = new Resend(apiKey)
     const { error } = await resend.emails.send({
       from: 'Rainey Removal <noreply@raineyremoval.com>',
 
-      to: process.env.CONTACT_RECIPIENT!,
+      to: recipient,
 
-      // ── Later: forward replies to the customer ──
-      // reply_to: safeEmail,
+      // Hitting Reply answers the customer (when they gave an email)
+      ...(email ? { replyTo: email } : {}),
 
-      subject: 'New Inquiry - Rainey Removal LLC',
+      // Name + service in the subject so leads don't all collapse into one thread
+      subject: `New Quote Request: ${name}${service ? ` (${service})` : ''}`.replace(/[\r\n]+/g, ' '),
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f9f9f9; border-radius: 8px; overflow: hidden;">
           <div style="background: #111111; padding: 24px 32px; border-bottom: 3px solid #22c55e;">
@@ -121,7 +162,9 @@ export async function POST(req: NextRequest) {
                   <strong style="color: #374151; font-size: 13px;">Email</strong>
                 </td>
                 <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 14px;">
-                  <a href="mailto:${safeEmail}" style="color: #22c55e;">${safeEmail}</a>
+                  ${email
+                    ? `<a href="mailto:${safeEmail}" style="color: #22c55e;">${safeEmail}</a>`
+                    : '<span style="color: #9ca3af;">Not provided</span>'}
                 </td>
               </tr>
               <tr>
@@ -129,7 +172,7 @@ export async function POST(req: NextRequest) {
                   <strong style="color: #374151; font-size: 13px;">Phone</strong>
                 </td>
                 <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; color: #111827; font-size: 14px;">
-                  <a href="tel:${safePhone}" style="color: #22c55e;">${safePhone}</a>
+                  <a href="tel:${esc(phone.replace(/[^\d+]/g, ''))}" style="color: #22c55e;">${safePhone}</a>
                 </td>
               </tr>
               <tr>
@@ -153,19 +196,13 @@ export async function POST(req: NextRequest) {
     })
 
     if (error) {
-      console.error('[contact/route] Resend API error:', error)
-      return NextResponse.json(
-        { error: 'Failed to send message. Please try again or call us directly.' },
-        { status: 500 }
-      )
+      logLead('Resend API error', error)
+      return NextResponse.json({ error: SEND_FAILED }, { status: 502 })
     }
 
     return NextResponse.json({ success: true })
   } catch (err) {
-    console.error('[contact/route] Resend error:', err)
-    return NextResponse.json(
-      { error: 'Failed to send message. Please try again or call us directly.' },
-      { status: 500 }
-    )
+    logLead('Resend request failed', err)
+    return NextResponse.json({ error: SEND_FAILED }, { status: 500 })
   }
 }

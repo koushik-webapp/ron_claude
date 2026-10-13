@@ -144,7 +144,9 @@
   ═════════════════════════════════════════════════════════ */
   var STYLES = `
     /* ── Reset ─────────────────────────────────────────────── */
-    #qf-overlay,#qf-overlay *{box-sizing:border-box;margin:0;padding:0;
+    /* :where() keeps this at zero specificity — as a plain #id rule it
+       out-ranked every .qf-* class and wiped their padding/margins */
+    :where(#qf-overlay,#qf-overlay *){box-sizing:border-box;margin:0;padding:0;
       font-family:-apple-system,'SF Pro Display',BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
       -webkit-font-smoothing:antialiased}
 
@@ -183,7 +185,7 @@
       border:1px solid rgba(255,255,255,0.08);
       box-shadow:var(--qf-shadow);
       overflow:hidden;
-      display:flex;flex-direction:column;max-height:90vh;
+      display:flex;flex-direction:column;max-height:90vh;max-height:90dvh;
       transform:scale(0.94) translateY(20px);
       transition:transform 0.32s cubic-bezier(0.32,0.72,0,1)}
     #qf-overlay.is-open #qf-modal{transform:scale(1) translateY(0)}
@@ -427,7 +429,7 @@
       width:100%;padding:13px 16px;
       border:1.5px solid rgba(255,255,255,0.1);
       border-radius:10px;
-      font-size:14px;color:var(--qf-text);
+      font-size:16px;color:var(--qf-text);
       background:rgba(255,255,255,0.04);
       outline:none;
       transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;
@@ -474,7 +476,11 @@
       display:flex;align-items:center;gap:11px;
       cursor:pointer;font-size:13.5px;color:#d1d5db;
       user-select:none}
-    .qf-check-label input[type=checkbox]{display:none}
+    /* Visually hidden but still focusable (display:none took the extras out of
+       keyboard / VoiceOver reach) */
+    .qf-check-label{position:relative}
+    .qf-check-label input[type=checkbox]{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+    .qf-check-label input:focus-visible + .qf-check-box{outline:2px solid #22c55e;outline-offset:2px}
     .qf-check-box{
       width:20px;height:20px;border-radius:6px;
       border:1.5px solid rgba(255,255,255,0.12);
@@ -628,7 +634,7 @@
     /* ── Mobile ─────────────────────────────────────────────── */
     @media(max-width:540px){
       #qf-overlay{padding:12px 0 0;align-items:flex-end}
-      #qf-modal{border-radius:24px 24px 0 0;max-height:92vh}
+      #qf-modal{border-radius:24px 24px 0 0;max-height:92vh;max-height:92dvh}
       .qf-cards{grid-template-columns:1fr}
       .qf-card{flex-direction:row;text-align:left;padding:16px 18px;gap:14px}
       .qf-card-icon{width:44px;height:44px;flex-shrink:0}
@@ -639,6 +645,25 @@
       #qf-footer{padding:16px 20px 20px}
       .qf-contact-chips{flex-direction:column}
     }
+
+    @media(max-height:600px){
+      #qf-body{min-height:0}
+      #qf-progress-area{padding-top:22px;padding-bottom:8px}
+    }
+
+    /* Keyboard focus ring (buttons/inputs set outline:none) */
+    #qf-overlay :focus-visible{outline:2px solid #22c55e;outline-offset:2px}
+    /* Scrolling to the end of the form doesn't drag the page behind it */
+    #qf-body{overscroll-behavior:contain}
+
+    /* ── Submit error ───────────────────────────────────────── */
+    #qf-submit-error{
+      font-size:13px;line-height:1.5;color:#fca5a5;
+      background:rgba(248,113,113,0.08);
+      border:1px solid rgba(248,113,113,0.25);
+      border-radius:10px;padding:10px 14px;margin:0 28px 4px}
+    #qf-submit-error a{color:#fff;font-weight:600;white-space:nowrap}
+    @media(max-width:540px){#qf-submit-error{margin:0 20px 4px}}
 
     /* ── Keyframes ──────────────────────────────────────────── */
     @keyframes qfStepIn{
@@ -760,24 +785,14 @@
 
   function init() {
     /* Duplicate-init guard — Next.js hot reload safety */
-    if (document.getElementById('qf-overlay')) {
-      console.log('[QuoteForm] already initialised — skipping');
-      window.openQuoteModal = openModal;
-      window.testQuoteModal = openModal;
-      return;
-    }
+    if (document.getElementById('qf-overlay')) return;
 
-    console.log('[QuoteForm] initialising…');
     injectStyles();
     buildModal();
     bindTriggers();
 
-    /* Expose global openers for chatbot, nav, and external callers */
+    /* Expose global opener for chatbot, nav, and external callers */
     window.openQuoteModal = openModal;
-    window.testQuoteModal = openModal;
-
-    var triggerCount = document.querySelectorAll('.qf-trigger,[data-qf-trigger],[data-quote-trigger]').length;
-    console.log('[QuoteForm] ready \u2713  triggers in DOM right now:', triggerCount);
   }
 
   function injectStyles() {
@@ -902,8 +917,10 @@
     };
 
     el.close.addEventListener('click', closeModal);
+    /* A stray tap on the backdrop shouldn't wipe a half-filled form —
+       past step 1 only the close button (or Esc) closes it */
     el.overlay.addEventListener('click', function (e) {
-      if (e.target === el.overlay) closeModal();
+      if (e.target === el.overlay && state.step <= 1) closeModal();
     });
     el.back.addEventListener('click', handleBack);
     el.next.addEventListener('click', handleNext);
@@ -933,7 +950,8 @@
             "get a quote" in any capitalisation */
       if (!trigger) {
         var btn = e.target.closest('a, button');
-        if (btn && /get\s+a\s+(free\s+)?quote/i.test(btn.textContent.trim())) {
+        if (btn && !btn.closest('#cb-widget') &&
+            /get\s+a\s+(free\s+)?quote/i.test(btn.textContent.trim())) {
           trigger = btn;
         }
       }
@@ -953,6 +971,13 @@
     state.service = null;
     state.going   = 1;
     state.data    = {};
+
+    /* A previous submit hides the footer and fades the truck — reset both
+       so the form works again when reopened in the same page visit */
+    el.footer.hidden = false;
+    el.next.hidden   = false;
+    el.truckAnchor.classList.remove('qf-truck-done');
+    el.fill.style.boxShadow = '';
     renderStep(1);
 
     el.overlay.classList.add('is-open');
@@ -1009,6 +1034,7 @@
     updateHeader();
     el.back.hidden = (n === 1);
     el.next.disabled = false;
+    clearSubmitError();
     el.next.textContent = (n === QF.totalSteps) ? 'Request My Quote' : 'Continue';
 
     var stepEl = document.createElement('div');
@@ -1021,6 +1047,7 @@
 
     el.body.innerHTML = '';
     el.body.appendChild(stepEl);
+    clearInvalidOnInput(stepEl);
 
     if (n === 1) restoreServiceCards();
     if (n === 2) restoreStep2Fields(stepEl);
@@ -1109,6 +1136,11 @@
       var card = document.createElement('div');
       card.className = 'qf-card';
       card.dataset.svc = svc.id;
+      card.setAttribute('role', 'button');
+      card.tabIndex = 0;
+      card.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+      });
       if (state.service === svc.id) card.classList.add('qf-selected');
 
       card.innerHTML =
@@ -1185,9 +1217,13 @@
     var container = document.createElement('div');
     container.className = 'qf-fields';
 
-    var nameRow  = buildField({ type: 'text', id: 'name',  label: 'Full name',     placeholder: 'Your name',      required: true });
-    var phoneRow = buildField({ type: 'text', id: 'phone', label: 'Phone number',  placeholder: '(xxx) xxx-xxxx', required: true });
-    var emailRow = buildField({ type: 'text', id: 'email', label: 'Email address', placeholder: 'Optional',       required: false });
+    var nameRow  = buildField({ type: 'text', id: 'name',  label: 'Full name',     placeholder: 'Your name',      required: true,
+                                attrs: { autocomplete: 'name', autocapitalize: 'words', maxlength: 100 } });
+    var phoneRow = buildField({ type: 'text', id: 'phone', label: 'Phone number',  placeholder: '(xxx) xxx-xxxx', required: true,
+                                inputType: 'tel', attrs: { autocomplete: 'tel', inputmode: 'tel', maxlength: 30 } });
+    var emailRow = buildField({ type: 'text', id: 'email', label: 'Email address', placeholder: 'Optional',       required: false,
+                                inputType: 'email', attrs: { autocomplete: 'email', inputmode: 'email', autocapitalize: 'off',
+                                                             autocorrect: 'off', spellcheck: 'false', maxlength: 254 } });
 
     var prefField = document.createElement('div');
     prefField.className = 'qf-field';
@@ -1259,8 +1295,9 @@
     if (f.type === 'text' || f.type === 'date') {
       wrap.innerHTML = lbl +
         '<input id="qf-f-' + f.id + '" class="qf-input"' +
-        ' type="' + f.type + '"' +
+        ' type="' + (f.inputType || f.type) + '"' +
         (f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '') +
+        attrsOf(f.attrs || (f.type === 'text' ? { maxlength: 200 } : null)) +
         (f.required ? ' data-required' : '') + '>' +
         '<span class="qf-error">This field is required.</span>';
     }
@@ -1269,6 +1306,7 @@
       wrap.innerHTML = lbl +
         '<textarea id="qf-f-' + f.id + '" class="qf-textarea"' +
         (f.placeholder ? ' placeholder="' + esc(f.placeholder) + '"' : '') +
+        attrsOf(f.attrs || { maxlength: 1500 }) +
         (f.required ? ' data-required' : '') + '></textarea>' +
         '<span class="qf-error">This field is required.</span>';
     }
@@ -1305,6 +1343,16 @@
   /* ═════════════════════════════════════════════════════════
      DATA COLLECTION
   ═════════════════════════════════════════════════════════ */
+
+  /* Fixing a flagged field clears its red state right away */
+  function clearInvalidOnInput(container) {
+    container.querySelectorAll('.qf-input, .qf-textarea').forEach(function (inp) {
+      inp.addEventListener('input', function () {
+        var fw = inp.closest('.qf-field');
+        if (fw) fw.classList.remove('qf-invalid');
+      });
+    });
+  }
 
   function collectStepData() {
     if (state.step === 1) {
@@ -1377,6 +1425,16 @@
           }
           ok = false;
         }
+        var emailInp = document.getElementById('qf-f-email');
+        if (emailInp && emailInp.value.trim() && !EMAIL_RE.test(emailInp.value.trim())) {
+          var ef = emailInp.closest('.qf-field');
+          if (ef) {
+            ef.classList.add('qf-invalid');
+            var emailErr = ef.querySelector('.qf-error');
+            if (emailErr) emailErr.textContent = 'Enter a valid email, or leave it blank.';
+          }
+          ok = false;
+        }
       }
     }
 
@@ -1430,33 +1488,56 @@
       if (!val || (Array.isArray(val) && val.length === 0)) return;
       lines.push(f.label + ': ' + (Array.isArray(val) ? val.join(', ') : val));
     });
+    if (d.contactPref) lines.push('Preferred contact: ' + d.contactPref);
+
+    /* Give up after 20s so a dead connection can't leave it "Sending…" forever */
+    var controller = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = controller ? setTimeout(function () { controller.abort(); }, 20000) : null;
 
     fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name:    d.name    || 'Not provided',
-        email:   d.email   || 'Ofc.QuranRainey@gmail.com',
-        phone:   d.phone   || 'Not provided',
+        name:    d.name  || '',
+        email:   d.email || '',
+        phone:   d.phone || '',
         message: lines.join('\n'),
         honeypot: '',
       }),
+      signal: controller ? controller.signal : undefined,
     })
-    .then(function (res) { return res.json().then(function (data) { return { ok: res.ok, data: data }; }); })
+    .then(function (res) {
+      return res.json()
+        .catch(function () { return {}; })
+        .then(function (data) { return { ok: res.ok, data: data }; });
+    })
     .then(function (r) {
-      if (!r.ok) {
-        el.next.disabled = false;
-        el.next.textContent = 'Request My Quote';
-        console.error('[QuoteForm] submit error:', r.data);
-      } else {
-        showSuccess();
-      }
+      if (r.ok) showSuccess();
+      else submitFailed(r.data && r.data.error);
     })
-    .catch(function (err) {
-      el.next.disabled = false;
-      el.next.textContent = 'Request My Quote';
-      console.error('[QuoteForm] network error:', err);
-    });
+    .catch(function () { submitFailed(); })
+    .then(function () { if (timer) clearTimeout(timer); });
+  }
+
+  /* The customer must always find out when a request didn't go through —
+     otherwise the lead is silently lost */
+  function submitFailed(serverMsg) {
+    el.next.disabled = false;
+    el.next.textContent = 'Try Again';
+    if (el.truckAnchor) el.truckAnchor.classList.remove('qf-truck-done');
+
+    clearSubmitError();
+    var box = document.createElement('div');
+    box.id = 'qf-submit-error';
+    box.setAttribute('role', 'alert');
+    box.innerHTML = esc(serverMsg || 'We couldn\u2019t send your request.') +
+      ' Please try again, or call <a href="' + QF.phoneHref + '">' + esc(QF.phone) + '</a>.';
+    el.footer.parentNode.insertBefore(box, el.footer);
+  }
+
+  function clearSubmitError() {
+    var old = document.getElementById('qf-submit-error');
+    if (old) old.parentNode.removeChild(old);
   }
 
   function showSuccess() {
@@ -1480,9 +1561,10 @@
         '</svg>' +
         'Urgent? Call ' + QF.phone +
       '</a>' +
-      '<button class="qf-success-close" onclick="(function(){var o=document.getElementById(\'qf-overlay\');if(o){o.classList.remove(\'is-open\');o.style.cssText=\'\';}document.body.classList.remove(\'qf-modal-open\')})()">Close</button>';
+      '<button type="button" class="qf-success-close">Close</button>';
 
     el.body.appendChild(successDiv);
+    successDiv.querySelector('.qf-success-close').addEventListener('click', closeModal);
 
     el.stepLbl.textContent = 'Request submitted';
     el.title.textContent   = QF.name;
@@ -1501,6 +1583,15 @@
   function labelOf(serviceId) {
     var svc = SERVICES.filter(function (s) { return s.id === serviceId; })[0];
     return svc ? svc.label : '';
+  }
+
+  var EMAIL_RE = /^[A-Za-z0-9._%+'-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+  function attrsOf(attrs) {
+    if (!attrs) return '';
+    return Object.keys(attrs).map(function (k) {
+      return ' ' + k + '="' + esc(attrs[k]) + '"';
+    }).join('');
   }
 
   function esc(str) {

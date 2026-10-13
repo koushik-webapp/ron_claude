@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Instagram, Facebook, X } from "lucide-react";
 
@@ -17,7 +18,7 @@ export const TextRoll: React.FC<{
   <motion.span
     initial="initial"
     whileHover="hovered"
-    className={cn("relative block overflow-hidden cursor-pointer", className)}
+    className={cn("relative block overflow-hidden cursor-pointer whitespace-nowrap", className)}
     style={{ lineHeight: 0.85 }}
     aria-label={children}
   >
@@ -74,13 +75,33 @@ const itemVariants = {
   }),
 };
 
-export const MobileNavOverlay: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+export const MobileNavOverlay: React.FC<{ onClose: () => void }> = ({ onClose }) => {
+  // While open: stop the page scrolling underneath, hide the chat button
+  // (it sat on top of the social icons), and let Esc close the menu
+  useEffect(() => {
+    const html = document.documentElement;
+    const prevOverflow = html.style.overflow;
+    html.style.overflow = "hidden";
+    document.body.classList.add("rr-overlay-open");
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      html.style.overflow = prevOverflow;
+      document.body.classList.remove("rr-overlay-open");
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [onClose]);
+
+  return (
   <motion.div
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     exit={{ opacity: 0 }}
     transition={{ duration: 0.22 }}
     className="fixed inset-0 z-[100] flex flex-col bg-zinc-950"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Menu"
   >
     {/* Top bar */}
     <div className="flex items-center justify-between px-6 h-[60px] border-b border-zinc-800 shrink-0">
@@ -107,19 +128,20 @@ export const MobileNavOverlay: React.FC<{ onClose: () => void }> = ({ onClose })
           animate="visible"
           className="w-full text-center"
         >
-          <a
+          <Link
             href={item.href}
             onClick={onClose}
             className="group relative inline-block text-white hover:text-green-400 transition-colors duration-200"
           >
             <TextRoll
               center
-              className="text-5xl font-extrabold uppercase tracking-[-0.02em]"
+              // 48px "PROMOTIONS" is wider than a 375px iPhone — step down on small screens
+              className="text-4xl min-[400px]:text-5xl font-extrabold uppercase tracking-[-0.02em]"
             >
               {item.name}
             </TextRoll>
             <span className="absolute -bottom-1 left-1/2 h-px w-0 -translate-x-1/2 bg-green-400 transition-all duration-300 group-hover:w-full" />
-          </a>
+          </Link>
         </motion.div>
       ))}
 
@@ -139,17 +161,14 @@ export const MobileNavOverlay: React.FC<{ onClose: () => void }> = ({ onClose })
         initial="hidden"
         animate="visible"
       >
-        <a
-          href="#quote"
-          onClick={(e) => {
-            onClose()
-            const el = document.getElementById('quote')
-            if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth' }) }
-          }}
+        {/* quote-form.js opens the quote modal for any .qf-trigger */}
+        <button
+          type="button"
+          onClick={onClose}
           className="qf-trigger inline-block px-8 py-3 rounded-full bg-green-600 text-white text-[13px] font-bold tracking-wide hover:bg-green-500 transition-colors"
         >
           Get a Quote
-        </a>
+        </button>
       </motion.div>
     </div>
 
@@ -188,4 +207,5 @@ export const MobileNavOverlay: React.FC<{ onClose: () => void }> = ({ onClose })
       </div>
     </motion.div>
   </motion.div>
-);
+  );
+};

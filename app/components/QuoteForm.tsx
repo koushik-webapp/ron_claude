@@ -73,7 +73,7 @@ export default function QuoteForm() {
         <div>
           <p className="text-white font-bold text-[15px] mb-1">Request Received</p>
           <p className="text-zinc-400 text-[13px] leading-relaxed max-w-[260px]">
-            We'll be in touch shortly. For urgent needs, call us directly.
+            We’ll be in touch shortly. For urgent needs, call us directly.
           </p>
         </div>
         <button

@@ -64,7 +64,7 @@ function FlickeringGrid({
     const ro = new ResizeObserver(resize)
     ro.observe(canvas)
 
-    const draw = () => {
+    const paint = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
@@ -76,12 +76,30 @@ function FlickeringGrid({
           ctx.fillRect(i * step, j * step, squareSize, squareSize)
         }
       }
-      animRef.current = requestAnimationFrame(draw)
     }
 
-    draw()
+    // Animate only while on screen, at ~30fps — it used to repaint every frame
+    // forever, costing phones ~20% of the main thread even at the top of the page
+    let visible = false
+    let last = 0
+    const loop = (t: number) => {
+      if (!visible) return
+      if (t - last >= 33) { last = t; paint() }
+      animRef.current = requestAnimationFrame(loop)
+    }
+    const io = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting
+      cancelAnimationFrame(animRef.current)
+      if (visible) animRef.current = requestAnimationFrame(loop)
+    })
+
+    paint()
+    // Reduced-motion users get the static grid
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!still) io.observe(canvas)
     return () => {
       cancelAnimationFrame(animRef.current)
+      io.disconnect()
       ro.disconnect()
     }
   }, [squareSize, gridGap, flickerChance, color, parseColor])
@@ -126,14 +144,14 @@ const NAV_LINKS = [
   { label: 'About',   href: '/'        },
   { label: 'FAQ',     href: '/#faq'    },
   { label: 'Gallery', href: '/gallery' },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Contact', href: '#contact' }, // the footer itself (id="contact") holds the phone/email
 ]
 
 /* ─── Footer ─────────────────────────────────────────────────────── */
 
 export default function FlickeringFooter() {
   return (
-    <footer className="bg-zinc-950 border-t border-zinc-800/50">
+    <footer id="contact" className="bg-zinc-950 border-t border-zinc-800/50">
 
       {/* ── Main row ── */}
       <div className="max-w-6xl mx-auto px-6 md:px-10 pt-16 pb-14">
@@ -262,7 +280,7 @@ export default function FlickeringFooter() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
-            className="text-3xl md:text-5xl font-black tracking-tight text-white/90 select-none"
+            className="px-6 text-center text-3xl md:text-5xl font-black tracking-tight text-white/90 select-none"
           >
             Where Strength Meets Service.
           </motion.p>
@@ -272,7 +290,8 @@ export default function FlickeringFooter() {
       {/* ── Copyright bar ── */}
       <div className="border-t border-zinc-800/50 px-6 md:px-10 py-5">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-zinc-600">
+          {/* The page is prerendered — the year can differ from the build's after New Year */}
+          <p className="text-xs text-zinc-600" suppressHydrationWarning>
             &copy; {new Date().getFullYear()} Rainey Removal LLC. All rights reserved.
           </p>
           <p className="text-xs text-zinc-700">East Orange, NJ</p>

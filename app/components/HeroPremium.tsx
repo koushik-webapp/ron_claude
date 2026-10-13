@@ -159,7 +159,6 @@ const CFG = {
 export default function HeroPremium() {
   const sectionRef    = useRef<HTMLElement>(null)
   const videoRef      = useRef<HTMLVideoElement>(null)
-  const posterImgRef  = useRef<HTMLImageElement>(null)
   const progress      = useMotionValue(0)
 
   // ── Mobile blank-screen fix ───────────────────────────────────────────────
@@ -170,6 +169,9 @@ export default function HeroPremium() {
   // via a simple mount animation instead of the scroll-gated MotionValue.
   const [isMobile, setIsMobile] = useState(false)
   useEffect(() => {
+    // Touch support only exists in the browser — reading it during render would
+    // make the client's first render differ from the server HTML.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobile('ontouchstart' in window || navigator.maxTouchPoints > 0)
   }, [])
 
@@ -177,7 +179,14 @@ export default function HeroPremium() {
   // Forces the section to occupy exactly the visible viewport height,
   // preventing vh-based children from over/under-shooting their positions.
   useEffect(() => {
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+    let lastWidth = 0
     const applyVh = () => {
+      // On touch devices only re-measure when the width changes (rotation).
+      // iOS fires `resize` whenever its toolbar collapses mid-scroll, and
+      // following that made everything below the hero jump.
+      if (isTouch && window.innerWidth === lastWidth) return
+      lastWidth = window.innerWidth
       if (sectionRef.current) {
         sectionRef.current.style.height = `${window.innerHeight}px`
       }
@@ -211,8 +220,8 @@ export default function HeroPremium() {
   // Desktop browsers allow setting currentTime without a prior play() call,
   // so we do NOT prime eagerly — that would immediately replace the correct
   // initial frame image with the video's black frame 0 before any scroll.
-  // iOS Safari requires a user-gesture play() before seeking; we handle that
-  // inside the scrub useEffect's onTouchStart handler below.
+  // iOS Safari requires a user-gesture play() before seeking; the scrub
+  // useEffect's onTouchStart handler below primes it on the first touch.
 
   // ── Scrub timeline ────────────────────────────────────────────────────────
   useEffect(() => {
@@ -241,9 +250,9 @@ export default function HeroPremium() {
     let prevAbsDelta = 0
     let pageReleased = false
 
-    // ── iOS prime + initial-frame dismissal ───────────────────────────────
-    // Fade out the initial-frame <img> overlay via direct DOM ref (no React
-    // re-render) on the first user scroll interaction.
+    // ── iOS prime ─────────────────────────────────────────────────────────
+    // Safari ignores preload="auto" and won't decode frames for seeking until
+    // play() has run inside a user gesture — done on the first touch below.
     let primed = false
     const v = videoRef.current
     const prime = () => {
@@ -251,23 +260,17 @@ export default function HeroPremium() {
       primed = true
       v.play().then(() => v.pause()).catch(() => {})
     }
-    const hidePoster = () => {
-      const img = posterImgRef.current
-      if (img && img.style.opacity !== '0') img.style.opacity = '0'
-    }
+
+    // Gestures that start inside the quote form, chatbot, menu or any other
+    // dialog belong to them — never scrub the hero (or scroll the page) for those
+    const inOverlay = (t: EventTarget | null) =>
+      t instanceof Element && t.closest('#qf-overlay, #cb-widget, [role="dialog"]') !== null
+    const overlayOpen = () =>
+      document.body.classList.contains('qf-modal-open') ||
+      document.body.classList.contains('rr-overlay-open')
 
     const lockPage    = () => { document.body.style.overflow = 'hidden' }
     const releasePage = () => { document.body.style.overflow = ''       }
-    lockPage()
-
-    // Mobile safety net: auto-release scroll lock after 5 s so users
-    // can never get permanently stuck if they don't swipe.
-    let safetyTimer: ReturnType<typeof setTimeout> | undefined
-    if (isMob) {
-      safetyTimer = setTimeout(() => {
-        if (!pageReleased) { releasePage(); pageReleased = true }
-      }, 5000)
-    }
 
     const tick = () => {
       const diff = target - display
@@ -295,69 +298,122 @@ export default function HeroPremium() {
       return Math.sign(delta) * Math.min(Math.abs(delta), DELTA_MAX)
     }
 
+    // While the hero holds the page these run, and are non-passive so they
+    // can preventDefault. They're detached once the page is released: a
+    // non-passive touchmove/wheel listener makes the browser wait on JS
+    // before every scroll gesture on the rest of the page.
     const onWheel = (e: WheelEvent) => {
+      if (inOverlay(e.target)) return
       const delta   = processDelta(e.deltaY)
       const atEnd   = target >= TOTAL && delta > 0
       const atStart = target <= 0    && delta < 0
 
-      if (atEnd) {
-        if (!pageReleased) {
-          releasePage()
-          pageReleased = true
-          setTimeout(() => window.scrollBy({ top: 60, behavior: 'smooth' }), 16)
-        }
-        return
-      }
-      if (pageReleased && delta < 0 && window.scrollY === 0) {
-        lockPage(); pageReleased = false
-      }
-      if (pageReleased) return
-      if (atStart) { e.preventDefault(); return }
+      if (atEnd) { release(true); return }
       e.preventDefault()
+      if (atStart) return
       target = Math.max(0, Math.min(TOTAL, target + delta))
       scheduleRaf()
     }
 
-    const onScroll = () => {
-      if (window.scrollY === 0 && pageReleased) {
-        pageReleased = false
-        lockPage()
-        const v = videoRef.current
-        if (v) v.currentTime = Math.max(0, Math.min(VIDEO_DURATION, (target / TOTAL) * VIDEO_DURATION))
-      }
-    }
-
     let touchY = 0
-    const onTouchStart = (e: TouchEvent) => { touchY = e.touches[0].clientY }
+    const onTouchStart = (e: TouchEvent) => {
+      touchY = e.touches[0].clientY
+      prime()
+    }
     const onTouchMove  = (e: TouchEvent) => {
+      if (inOverlay(e.target)) return
       const dy = touchY - e.touches[0].clientY
       touchY   = e.touches[0].clientY
       // Mobile multiplier 2.2 (vs desktop 2): with TOTAL=200, a 91 px swipe
       // completes the animation — a short, decisive thumb gesture.
       const delta = dy * (isMob ? 2.2 : 2)
-      if (target >= TOTAL && delta > 0) {
-        if (!pageReleased) { releasePage(); pageReleased = true; setTimeout(() => window.scrollBy({ top: 60, behavior: 'smooth' }), 16) }
-        return
-      }
-      if (pageReleased) return
+      if (target >= TOTAL && delta > 0) { release(true); return }
       e.preventDefault()
       target = Math.max(0, Math.min(TOTAL, target + delta))
       scheduleRaf()
     }
 
-    window.addEventListener('wheel',      onWheel,      { passive: false })
-    window.addEventListener('scroll',     onScroll,     { passive: true  })
-    window.addEventListener('touchstart', onTouchStart, { passive: true  })
-    window.addEventListener('touchmove',  onTouchMove,  { passive: false })
+    let scrubAttached = false
+    const attachScrub = () => {
+      if (scrubAttached) return
+      scrubAttached = true
+      window.addEventListener('wheel',     onWheel,     { passive: false })
+      window.addEventListener('touchmove', onTouchMove, { passive: false })
+    }
+    const detachScrub = () => {
+      if (!scrubAttached) return
+      scrubAttached = false
+      window.removeEventListener('wheel',     onWheel)
+      window.removeEventListener('touchmove', onTouchMove)
+    }
+
+    // `nudge` scrolls a little past the hero so the release is obvious
+    const release = (nudge: boolean) => {
+      if (pageReleased) return
+      pageReleased = true
+      releasePage()
+      detachScrub()
+      if (nudge) setTimeout(() => window.scrollBy({ top: 60, behavior: 'smooth' }), 16)
+    }
+    const relock = () => {
+      if (!pageReleased) return
+      pageReleased = false
+      lockPage()
+      attachScrub()
+    }
+
+    // Back at the very top → the hero takes the page again
+    const onScroll = () => {
+      if (window.scrollY === 0 && pageReleased && !overlayOpen()) {
+        relock()
+        const v = videoRef.current
+        if (v) v.currentTime = Math.max(0, Math.min(VIDEO_DURATION, (target / TOTAL) * VIDEO_DURATION))
+      }
+    }
+    // Wheel-up while already at the top doesn't fire `scroll`, so watch for it
+    // with a passive listener that only re-locks
+    const onWheelReleased = (e: WheelEvent) => {
+      if (pageReleased && e.deltaY < 0 && window.scrollY === 0 && !overlayOpen() && !inOverlay(e.target)) relock()
+    }
+
+    // Keyboard users: Space / PageDown / ↓ / End play the scrub, then release
+    // the page; ↑ / PageUp / Home rewind. (Before, keys did nothing while locked.)
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (pageReleased || e.defaultPrevented || overlayOpen() || inOverlay(e.target)) return
+      const t = e.target
+      if (t instanceof Element && t.closest('input, textarea, select, button, a, [contenteditable="true"], [role="button"]')) return
+      const down = e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === 'End' || (e.key === ' ' && !e.shiftKey)
+      const up   = e.key === 'ArrowUp'   || e.key === 'PageUp'   || e.key === 'Home' || (e.key === ' ' && e.shiftKey)
+      if (!down && !up) return
+      e.preventDefault()
+      if (up) { target = 0; scheduleRaf(); return }
+      if (target >= TOTAL) release(true)
+      else { target = TOTAL; scheduleRaf() }
+    }
+
+    lockPage()
+    attachScrub()
+    window.addEventListener('wheel',      onWheelReleased, { passive: true })
+    window.addEventListener('scroll',     onScroll,        { passive: true })
+    window.addEventListener('touchstart', onTouchStart,    { passive: true })
+    window.addEventListener('keydown',    onKeyDown)
+
+    // Mobile safety net: auto-release scroll lock after 5 s so users
+    // can never get permanently stuck if they don't swipe.
+    let safetyTimer: ReturnType<typeof setTimeout> | undefined
+    if (isMob) {
+      safetyTimer = setTimeout(() => release(false), 5000)
+    }
 
     return () => {
       cancelAnimationFrame(rafId)
       if (safetyTimer !== undefined) clearTimeout(safetyTimer)
       releasePage()
-      window.removeEventListener('wheel',      onWheel)
+      detachScrub()
+      window.removeEventListener('wheel',      onWheelReleased)
       window.removeEventListener('scroll',     onScroll)
       window.removeEventListener('touchstart', onTouchStart)
-      window.removeEventListener('touchmove',  onTouchMove)
+      window.removeEventListener('keydown',    onKeyDown)
     }
   }, [progress])
 
@@ -368,11 +424,10 @@ export default function HeroPremium() {
   return (
     <section
       ref={sectionRef}
-      className="relative overflow-hidden"
+      // hero-height (globals.css): 100svh with a 100vh fallback for first paint
+      className="hero-height relative overflow-hidden"
       style={{
-        // Safari fix 1: JS sets this to window.innerHeight so vh-children are always accurate.
-        // Fallback covers SSR / first paint before the effect fires.
-        height: '100vh',
+        // Safari fix 1: JS sets this to window.innerHeight so %-children are always accurate.
         background: 'linear-gradient(to bottom, #ffffff 0%, #ffffff 45%, #f0f1f3 100%)',
         // Safari fix 2: force the section onto its own GPU compositing layer.
         // This makes overflow:hidden actually clip child GPU layers (will-change:transform
@@ -405,7 +460,7 @@ export default function HeroPremium() {
 
       {/* ── Scroll-scrubbed video ─────────────────────────────────────────── */}
       {/* Mobile: floats just below tagline text; sm+: anchored to bottom    */}
-      <div className="absolute inset-x-0 bottom-0 top-0 flex items-start pt-[40vh] sm:items-end sm:pt-0 justify-center z-20"
+      <div className="hero-van-offset absolute inset-x-0 bottom-0 top-0 flex items-start sm:items-end justify-center z-20"
            style={{ paddingBottom: '2vh' }}>
         {/*
           MacBook Safari fix — van video is 16:9 (1.793 ratio).
@@ -435,7 +490,7 @@ export default function HeroPremium() {
           muted
           playsInline
           preload="auto"
-          className="w-auto h-auto max-w-[96vw] max-h-[68vh] sm:max-h-[84vh] lg:max-w-[calc(100vw-512px)] select-none"
+          className="hero-van-video w-auto h-auto max-w-[96vw] sm:max-h-[84vh] lg:max-w-[calc(100vw-512px)] select-none"
           style={{
             mixBlendMode: 'multiply',
             backgroundColor: 'white', // before the poster itself decodes the element paints only this; white × backdrop = backdrop, so it stays invisible rather than flashing dark.
@@ -474,11 +529,11 @@ export default function HeroPremium() {
         {/* Safari fix: lg:text-7xl (72px) across 3 bold words nearly fills 1024-1280px viewports,
             causing flex-wrap to break the last word onto a second line which overlaps the van.
             Cap at text-6xl for lg (1024-1279px) and only go text-7xl at xl (1280px+). */}
-        <p className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black tracking-tight text-center leading-[1.2] flex flex-wrap items-center justify-center gap-y-1">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-black tracking-tight text-center leading-[1.2] flex flex-wrap items-center justify-center gap-y-1">
           <span className="bg-white text-slate-900 px-3 py-1">We Move</span>
           <span className="bg-slate-900 text-white px-3 py-1">Anything</span>
           <span className="bg-slate-900 text-green-400 px-3 py-1">Anywhere</span>
-        </p>
+        </h1>
       </motion.div>
 
       {/* ── Services reveal — right side, scroll-end ─────────────────────── */}
@@ -557,7 +612,7 @@ export default function HeroPremium() {
         <p className="flex-1 text-center text-[10px] sm:text-base font-semibold tracking-[0.18em] uppercase text-green-500">
           Garbage Removal&nbsp;&nbsp;·&nbsp;&nbsp;Moving&nbsp;&nbsp;·&nbsp;&nbsp;Local &amp; Out of State
         </p>
-        <p className="hidden sm:block absolute right-10 text-[11px] font-semibold tracking-[0.16em] uppercase text-slate-400 text-right">
+        <p className="hidden xl:block absolute right-10 text-[11px] font-semibold tracking-[0.16em] uppercase text-slate-400 text-right">
           Est.&nbsp;<span className="text-slate-600">East Orange, New Jersey</span>
         </p>
       </motion.div>

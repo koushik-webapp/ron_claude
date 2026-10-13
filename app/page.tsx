@@ -9,7 +9,7 @@ import FlickeringFooter from '../components/ui/flickering-footer'
 
 export default function Home() {
   return (
-    <main className="bg-zinc-950 overflow-x-hidden">
+    <main className="bg-zinc-950 overflow-x-clip">
       <HeroPremium />
       <ServicesSection />
       <HowItWorksSection />

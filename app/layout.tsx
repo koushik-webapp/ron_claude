@@ -1,20 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import FloatingNav from "@/components/ui/floating-nav";
+import MotionProvider from "@/components/ui/motion-provider";
 import PromoModal from "./components/PromoModal";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Rainey Removal — We Remove Anything",
@@ -28,14 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <FloatingNav />
-        {/* Promo pop-up + docked bar — self-hides outside the promo date window.
-            Edit the campaign in /app/data/promotions.ts */}
-        <PromoModal />
-        {children}
+      <body className="antialiased">
+        <MotionProvider>
+          <FloatingNav />
+          {/* Promo pop-up + docked bar — self-hides outside the promo date window.
+              Edit the campaign in /app/data/promotions.ts */}
+          <PromoModal />
+          {children}
+        </MotionProvider>
         {/* Premium vanilla JS chatbot — edit at /public/chatbot.js */}
         <Script src="/chatbot.js" strategy="afterInteractive" />
         {/* Premium multi-step quote form — edit at /public/quote-form.js */}

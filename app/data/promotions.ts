@@ -146,6 +146,26 @@ export function hasPromoEnded(p: Promo = ACTIVE_PROMO, now: Date = new Date()): 
   return now >= endBoundary(p)
 }
 
+/**
+ * "Has it ended?" judged on New Jersey's calendar. For server rendering, where
+ * the clock is UTC — the local-time helpers above would end a promo 4–5 hours
+ * early there (8pm ET on the last day).
+ */
+export function hasPromoEndedInNJ(p: Promo = ACTIVE_PROMO, now: Date = new Date()): boolean {
+  const [y, m, d] = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/New_York',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  })
+    .format(now)
+    .split('-')
+    .map(Number)
+  const today = y * 10000 + m * 100 + d
+  const lastDay = p.endsOn.year * 10000 + p.endsOn.month * 100 + p.endsOn.day
+  return today > lastDay
+}
+
 /** e.g. "August 1 – September 14, 2026" */
 export function formatPromoRange(p: Promo = ACTIVE_PROMO): string {
   const fmt = (y: number, m: number, d: number) =>

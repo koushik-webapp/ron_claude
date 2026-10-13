@@ -40,8 +40,11 @@ export default function PromoModal() {
   useEffect(() => {
     if (!isPromoActive(P)) return
 
-    const alreadySeen =
-      typeof window !== 'undefined' && window.sessionStorage.getItem(promoSeenKey(P)) === '1'
+    // getItem throws in Safari when cookies/site data are blocked — treat as unseen
+    let alreadySeen = false
+    try {
+      alreadySeen = window.sessionStorage.getItem(promoSeenKey(P)) === '1'
+    } catch {}
 
     // On the promotions page itself the pop-up would be redundant — the whole
     // page is the offer. Dock straight away instead.
@@ -75,8 +78,11 @@ export default function PromoModal() {
     const root = document.documentElement
     const previous = root.style.overflow
     root.style.overflow = 'hidden'
+    // Hides the chatbot launcher, which otherwise sits on top of the CTAs
+    document.body.classList.add('rr-overlay-open')
     return () => {
       root.style.overflow = previous
+      document.body.classList.remove('rr-overlay-open')
     }
   }, [state])
 
@@ -114,7 +120,7 @@ export default function PromoModal() {
             exit={{ opacity: 0, x: 40, scale: 0.9 }}
             transition={{ type: 'spring', stiffness: 320, damping: 26 }}
             aria-label={`Reopen ${P.headlineTop} ${P.headlineBottom} offer — ${P.discountValue} off`}
-            className="group fixed top-[70px] right-3 sm:right-4 z-[45] flex items-center gap-2.5
+            className="group fixed bottom-5 left-3 sm:bottom-auto sm:left-auto sm:top-[70px] sm:right-4 z-[45] flex items-center gap-2.5
                        rounded-full border border-lime-400/40 bg-zinc-950/95 py-2 pl-3 pr-2.5
                        shadow-lg shadow-black/30 backdrop-blur-sm
                        transition-colors hover:border-lime-400 hover:bg-zinc-900"
@@ -172,7 +178,7 @@ export default function PromoModal() {
               exit={{ opacity: 0, scale: 0.7, x: 160, y: -220 }}
               transition={{ type: 'spring', stiffness: 260, damping: 26 }}
               style={{ transformOrigin: 'top right' }}
-              className="relative flex max-h-[94vh] w-full max-w-[430px] flex-col overflow-hidden
+              className="relative flex max-h-[94vh] supports-[height:100dvh]:max-h-[94dvh] w-full max-w-[430px] flex-col overflow-hidden
                          rounded-2xl border border-lime-400/25 bg-zinc-950 shadow-2xl shadow-black/60"
             >
               {/* Header */}
@@ -194,7 +200,7 @@ export default function PromoModal() {
                   type="button"
                   onClick={dock}
                   aria-label="Close offer"
-                  className="shrink-0 rounded-lg p-1.5 text-zinc-400 transition-colors
+                  className="shrink-0 rounded-lg p-3 -m-1.5 text-zinc-400 transition-colors
                              hover:bg-zinc-800 hover:text-white
                              focus:outline-none focus-visible:ring-2 focus-visible:ring-lime-400"
                 >

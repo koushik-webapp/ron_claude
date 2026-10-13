@@ -405,7 +405,9 @@
   var STYLES =
 
     /* ── Reset ──────────────────────────────────────────────── */
-    '#cb-widget,#cb-widget *{box-sizing:border-box;margin:0;padding:0;' +
+    /* :where() keeps the reset at zero specificity — as a plain #id rule it
+       out-ranked every .cb-* class and wiped bubble/chip padding */
+    ':where(#cb-widget,#cb-widget *){box-sizing:border-box;margin:0;padding:0;' +
     "font-family:-apple-system,'SF Pro Display',BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;" +
     '-webkit-font-smoothing:antialiased}' +
 
@@ -425,9 +427,15 @@
     'border-radius:26px;overflow:hidden;background:' + C.windowBg + ';' +
     'box-shadow:' + C.windowShadow + ';border:1px solid rgba(0,0,0,0.06);' +
     'transform-origin:bottom right;' +
-    'transform:scale(0.94) translateY(14px);opacity:0;pointer-events:none;' +
-    'transition:transform 0.28s cubic-bezier(0.32,0.72,0,1),opacity 0.2s ease}' +
-    '#cb-window.cb-open{transform:scale(1) translateY(0);opacity:1;pointer-events:all}' +
+    'transform:scale(0.94) translateY(14px);opacity:0;pointer-events:none;visibility:hidden;' +
+    'max-height:calc(100vh - 120px);max-height:calc(100dvh - 120px);' +
+    'transition:transform 0.28s cubic-bezier(0.32,0.72,0,1),opacity 0.2s ease,visibility 0s linear 0.28s}' +
+    '#cb-window.cb-open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;visibility:visible;' +
+    'transition:transform 0.28s cubic-bezier(0.32,0.72,0,1),opacity 0.2s ease,visibility 0s linear 0s}' +
+    /* Hidden while the site's phone menu or promo pop-up is open — it sat on top of their buttons */
+    'body.rr-overlay-open #cb-fab,body.rr-overlay-open #cb-window{opacity:0;visibility:hidden;pointer-events:none}' +
+    /* Visible focus ring for keyboard users (buttons set outline:none) */
+    '#cb-widget :focus-visible{outline:2px solid #22c55e;outline-offset:2px}' +
 
     /* ── Header ─────────────────────────────────────────────── */
     '#cb-header{background:' + C.headerBg + ';padding:20px 20px 18px;' +
@@ -440,7 +448,7 @@
     '#cb-dot{width:6px;height:6px;border-radius:50%;background:' + C.accent + ';flex-shrink:0;animation:cbPulse 2.6s infinite}' +
     '#cb-status-text{font-size:11.5px;color:rgba(174,174,178,0.9);line-height:1;font-weight:400}' +
     '#cb-header-right{display:flex;align-items:center;gap:2px;flex-shrink:0}' +
-    '#cb-header-right button,#cb-header-right a{width:32px;height:32px;border-radius:9px;' +
+    '#cb-header-right button,#cb-header-right a{width:40px;height:40px;border-radius:10px;' +
     'background:transparent;border:none;color:rgba(174,174,178,0.9);cursor:pointer;' +
     'display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:15px;' +
     'transition:background 0.15s,color 0.15s;outline:none}' +
@@ -610,8 +618,12 @@
 
     /* ── Mobile ─────────────────────────────────────────────── */
     '@media(max-width:480px){' +
-    '#cb-window{bottom:88px;right:16px;width:calc(100vw - 32px);border-radius:20px}' +
+    '#cb-window{bottom:88px;right:16px;width:calc(100vw - 32px);border-radius:20px;' +
+    'max-height:calc(100vh - 100px);max-height:calc(100dvh - 100px)}' +
     '#cb-fab{bottom:20px;right:20px;width:54px;height:54px}}' +
+    '@media(max-height:760px){#cb-messages{min-height:0}}' +
+    /* Reaching the end of the chat doesn't scroll the page behind it */
+    '#cb-messages{overscroll-behavior:contain}' +
 
     /* ════════════════════════════════════════════════════════
        KEYFRAMES
@@ -668,11 +680,29 @@
 
   var el = {};
 
+  /* Pending timers — restartChat() cancels them so an old conversation
+     can't keep posting messages into the new one */
+  var pending = [];
+  function later(fn, ms) {
+    var id = setTimeout(function () {
+      var i = pending.indexOf(id);
+      if (i !== -1) pending.splice(i, 1);
+      fn();
+    }, ms);
+    pending.push(id);
+    return id;
+  }
+  function cancelPending() {
+    pending.forEach(clearTimeout);
+    pending = [];
+  }
+
   /* ────────────────────────────────────────────────────────────
      INIT
   ──────────────────────────────────────────────────────────── */
 
   function init() {
+    if (document.getElementById('cb-widget')) return;
     injectStyles();
     buildWidget();
     bindEvents();
@@ -767,7 +797,7 @@
     /* Footer "Get a Quote" → open premium quote modal */
     el.footerQuote.addEventListener('click', function () {
       closeChat();
-      setTimeout(function () {
+      later(function () {
         if (typeof window.openQuoteModal === 'function') window.openQuoteModal();
       }, 320);
     });
@@ -788,7 +818,7 @@
     el.iconClose.style.display = 'block';
     if (!state.greeted) {
       state.greeted = true;
-      setTimeout(function () { playStep(FLOW.opening); }, ANIM.openDelay);
+      later(function () { playStep(FLOW.opening); }, ANIM.openDelay);
     }
   }
 
@@ -800,12 +830,13 @@
   }
 
   function restartChat() {
+    cancelPending();
     state.greeted  = false;
     state.usedKeys = {};
     el.messages.innerHTML = ''; /* clears bubbles + inline chips (all inside messages) */
     removeTyping();
     removeStepAnim();
-    setTimeout(function () {
+    later(function () {
       state.greeted = true;
       playStep(FLOW.opening);
     }, 180);
@@ -843,18 +874,18 @@
         showSecurityAnim(step.animLabel || '');
       }
 
-      setTimeout(function () {
+      later(function () {
         var a = document.getElementById('cb-step-anim');
         if (a) a.classList.add('cb-anim-out');
       }, fadeAt);
-      setTimeout(removeStepAnim, totalDur);
+      later(removeStepAnim, totalDur);
       delay += totalDur + 80;
     }
 
     /* ── 2. Service icon chip ─────────────────────────────────
        ← small outline pill shown after animation             */
     if (step.iconKey && ICONS[step.iconKey]) {
-      setTimeout(function () {
+      later(function () {
         addIconChip(ICONS[step.iconKey], step.iconLabel || '');
       }, delay);
       delay += ANIM.chipDelay;
@@ -863,13 +894,13 @@
     /* ── 3. Message bubbles (typing indicator before each) ─── */
     msgs.forEach(function (text, i) {
       var isLast = (i === msgs.length - 1);
-      setTimeout(function () { removeTyping(); showTyping(); }, delay);
+      later(function () { removeTyping(); showTyping(); }, delay);
       delay += ANIM.typingGap;
-      setTimeout(function () {
+      later(function () {
         removeTyping();
         addBotBubble(text);
         if (isLast) {
-          setTimeout(function () { showInlineReplies(step); }, 220);
+          later(function () { showInlineReplies(step); }, 220);
         }
       }, delay);
       delay += 140;
@@ -1118,35 +1149,27 @@
     removeInlineReplies();
     addUserBubble(reply.label);
 
-    if (reply.key === '__scroll_quote') {
+    if (reply.key === '__scroll_quote' || reply.key === '__scroll_contact') {
       closeChat();
-      setTimeout(function () {
+      later(function () {
         if (typeof window.openQuoteModal === 'function') window.openQuoteModal();
       }, 320);
-      return;
-    }
-    if (reply.key === '__scroll_contact') {
-      scrollTo(CONFIG.contactId);
-      setTimeout(closeChat, 300);
+      /* So the chat isn't a dead end with no options when reopened */
+      later(function () { playStep(FLOW.return); }, 700);
       return;
     }
     if (reply.key === '__menu') {
-      setTimeout(function () { playStep(FLOW.return); }, 440);
+      later(function () { playStep(FLOW.return); }, 440);
       return;
     }
 
     var next = FLOW[reply.key] || FALLBACK;
-    setTimeout(function () { playStep(next); }, 440);
+    later(function () { playStep(next); }, 440);
   }
 
   /* ────────────────────────────────────────────────────────────
      UTILITIES
   ──────────────────────────────────────────────────────────── */
-
-  function scrollTo(id) {
-    var t = document.getElementById(id);
-    if (t) t.scrollIntoView({ behavior: 'smooth' });
-  }
 
   function scrollBottom() {
     el.messages.scrollTop = el.messages.scrollHeight;

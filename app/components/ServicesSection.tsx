@@ -93,11 +93,19 @@ const CARDS = [
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
 
+// Poster frames live in /videos/posters/<name>.jpg — shown while a clip loads
+// and when iOS Low Power Mode blocks autoplay
+const posterFor = (src: string) => src.replace(/^(.*\/)?([^/]+)\.mp4$/, '/videos/posters/$2.jpg')
+
 function ServiceCard({ card, index }: { card: typeof CARDS[0] & { href: string }; index: number }) {
   const [hovered, setHovered] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
+  // Looping decorations only run while the card is (nearly) on screen
+  const onScreen = useInView(cardRef, { margin: '100px' })
 
   return (
     <motion.div
+      ref={cardRef}
       initial={{ opacity: 0, y: 48 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
@@ -109,7 +117,7 @@ function ServiceCard({ card, index }: { card: typeof CARDS[0] & { href: string }
       style={{ minHeight: '420px', background: card.baseGrad }}
     >
       {/* ── Animated particle streaks ──────────────────────────────────────── */}
-      {card.particles.map((p, i) => (
+      {onScreen && card.particles.map((p, i) => (
         <motion.div
           key={i}
           className="absolute pointer-events-none"
@@ -158,20 +166,28 @@ function ServiceCard({ card, index }: { card: typeof CARDS[0] & { href: string }
       </motion.div>
 
       {/* ── Scan line (security card style) — accent colored ─────────────── */}
-      <motion.div
-        className="absolute left-0 right-0 pointer-events-none"
-        style={{
-          height: '1px',
-          background: `linear-gradient(to right, transparent 0%, rgba(${card.accentRgb},0.35) 20%, rgba(${card.accentRgb},0.55) 50%, rgba(${card.accentRgb},0.35) 80%, transparent 100%)`,
-        }}
-        animate={{ top: ['0%', '100%'] }}
-        transition={{ duration: 4 + index * 0.8, repeat: Infinity, ease: 'linear', delay: index * 1.2 }}
-      />
+      {/* Moves a full-size layer with transform (GPU) rather than animating `top`,
+          which forced a layout every frame */}
+      {onScreen && (
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          animate={{ y: ['0%', '100%'] }}
+          transition={{ duration: 4 + index * 0.8, repeat: Infinity, ease: 'linear', delay: index * 1.2 }}
+        >
+          <div
+            style={{
+              height: '1px',
+              background: `linear-gradient(to right, transparent 0%, rgba(${card.accentRgb},0.35) 20%, rgba(${card.accentRgb},0.55) 50%, rgba(${card.accentRgb},0.35) 80%, transparent 100%)`,
+            }}
+          />
+        </motion.div>
+      )}
 
       {/* ── Real video background ─────────────────────────────────────────── */}
       {card.videoSrc && (
         <motion.video
           src={card.videoSrc}
+          poster={posterFor(card.videoSrc)}
           autoPlay
           muted
           loop

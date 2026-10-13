@@ -33,3 +33,23 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
+
+/* ── Hero viewport sizing ───────────────────────────────────────────────────
+   On iOS Safari 100vh is the height with the toolbars *hidden*, so on load it
+   overshoots the visible screen. svh is the height with them showing. Each
+   rule declares vh first as the fallback for browsers without svh. */
+.hero-height { height: 100vh; height: 100svh; }
+@media (max-width: 639.98px) {
+  .hero-van-offset { padding-top: 40vh; padding-top: 40svh; }
+  .hero-van-video  { max-height: 68vh;  max-height: 68svh; }
+}
+
+/* overflow-x: clip (unlike hidden) doesn't create a scroll container, so
+   position: sticky inside <main> keeps working. Older Safari (< 16) lacks
+   clip — fall back to hidden there. */
+@supports not (overflow: clip) {
+  .overflow-x-clip { overflow-x: hidden; }
+}
+
+/* /services hero: full visible screen under the 60px nav (svh, vh fallback) */
+.services-hero-height { height: calc(100vh - 60px); height: calc(100svh - 60px); }

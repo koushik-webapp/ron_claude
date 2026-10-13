@@ -32,6 +32,8 @@ export function Navbar() {
     }
 
     if (isOpen) {
+      // Opening snaps straight to the open shape; closing waits for the animation
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHeaderShapeClass('rounded-xl');
     } else {
       shapeTimeoutRef.current = setTimeout(() => {
